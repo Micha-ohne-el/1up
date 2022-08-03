@@ -1,8 +1,5 @@
 {
   "importMap": "./import-map.json",
-  "compilerOptions": {
-    "allowJs": false
-  },
   "tasks": {
     "run": "deno run --config './deno.json' --unstable --allow-env --allow-net='discord.com,gateway.discord.gg,localhost' ./src/main.ts",
     "setup": "deno run --config './deno.json' --unstable --allow-env --allow-net='localhost' ./setup.ts",
