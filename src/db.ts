@@ -1,4 +1,4 @@
-import postgres from '/deps/postgres.js';
+import postgres from '/deps/postgres.ts';
 import {getDbCredentials} from '/util/secrets.ts';
 
 export async function getXp(guildId: bigint, userId: bigint) {
