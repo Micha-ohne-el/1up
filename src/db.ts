@@ -31,6 +31,7 @@ export async function awardXp(guildId: bigint, userId: bigint, amount: number) {
       SET xp = xp.xp + ${amount}
       WHERE xp.guildId = ${guildId.toString()}
         AND xp.userId = ${userId.toString()}
+    RETURNING *
   `;
 }
 

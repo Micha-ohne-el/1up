@@ -1,6 +1,6 @@
 import {createBot, startBot, Intents} from '/deps/discordeno.ts';
 import {getBotToken} from '/util/secrets.ts';
-import {getXp, awardXp, getAll} from '/db.ts';
+import {awardXp, getAll} from '/db.ts';
 
 const botToken = getBotToken();
 
@@ -15,9 +15,7 @@ const bot = createBot(
         console.table(await getAll());
       },
       async messageCreate(_bot, message) {
-        await awardXp(message.guildId!, message.authorId, Math.random() * 4 + 1);
-
-        console.table(await getXp(message.guildId!, message.authorId));
+        console.table(await awardXp(message.guildId!, message.authorId, Math.random() * 4 + 1));
       }
     }
   }
