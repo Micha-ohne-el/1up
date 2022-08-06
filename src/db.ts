@@ -1,16 +1,6 @@
 import postgres from '/deps/postgres.js';
 import {getDbCredentials} from '/util/secrets.ts';
 
-export async function addEntry(guildId: bigint, userId: bigint) {
-  return await sql`
-    INSERT INTO xp (
-      guildId, userId, xp
-    ) VALUES (
-      ${guildId.toString()}, ${userId.toString()}, 0
-    ) RETURNING *
-  `;
-}
-
 export async function getXp(guildId: bigint, userId: bigint) {
   return await sql`
     SELECT *
@@ -30,10 +20,17 @@ export async function getAll() {
 
 export async function awardXp(guildId: bigint, userId: bigint, amount: number) {
   return await sql`
-    UPDATE xp
-    SET xp = xp + ${amount}
-    WHERE guildId = ${guildId.toString()}
-      AND userId = ${userId.toString()}
+    INSERT INTO xp (
+      guildId, userId, xp
+    )
+    VALUES (
+      ${guildId.toString()}, ${userId.toString()}, ${amount}
+    )
+    ON CONFLICT (guildId, userId)
+    DO UPDATE
+      SET xp = xp.xp + ${amount}
+      WHERE xp.guildId = ${guildId.toString()}
+        AND xp.userId = ${userId.toString()}
   `;
 }
 
