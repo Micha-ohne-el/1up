@@ -34,15 +34,6 @@ export async function awardXp(guildId: bigint, userId: bigint, amount: number) {
   `;
 }
 
-export async function retractXp(guildId: bigint, userId: bigint, amount: number) {
-  return await sql`
-    UPDATE xp
-    SET xp = xp - ${amount}
-    WHERE guildId = ${guildId.toString()}
-      AND userId = ${userId.toString()}
-  `;
-}
-
 export const sql = postgres(
   {
     host: 'localhost',
