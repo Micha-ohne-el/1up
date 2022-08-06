@@ -1,6 +1,6 @@
 import {createBot, startBot, Intents} from '/deps/discordeno.ts';
 import {getBotToken} from '/util/secrets.ts';
-import {handleMessage} from '/business/message-handler.ts';
+import {handleMessage} from '/business/handle-message.ts';
 
 const botToken = getBotToken();
 

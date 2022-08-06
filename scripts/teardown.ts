@@ -36,4 +36,22 @@ await sql`
 console.log('Success.');
 console.groupEnd();
 
+console.group('Dropping table "range"...');
+
+await sql`
+  DROP TABLE IF EXISTS range
+`;
+
+console.log('Success.');
+console.groupEnd();
+
+console.group('Dropping table "multiplier"...');
+
+await sql`
+  DROP TABLE IF EXISTS multiplier
+`;
+
+console.log('Success.');
+console.groupEnd();
+
 Deno.exit();
