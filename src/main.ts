@@ -14,7 +14,11 @@ const bot = createBot(
 
         console.table(await getAll());
       },
-      async messageCreate(_bot, message) {
+      async messageCreate(bot, message) {
+        if (message.isBot || message.authorId === bot.id) {
+          return;
+        }
+
         console.table(await awardXp(message.guildId!, message.authorId, Math.random() * 4 + 1));
       }
     }
