@@ -23,6 +23,16 @@ export async function getRoleXpMultiplier(id: bigint): Promise<number> {
   return await getMultiplier(id);
 }
 
+export async function setXpMultiplier(id: bigint, value: number): Promise<void> {
+  await sql`
+    INSERT INTO multiplier
+    VALUES (${id.toString()}, ${value})
+    ON CONFLICT (id)
+    DO UPDATE
+      SET multiplier = ${value}
+  `;
+}
+
 const fallbackMultiplier = 1;
 async function getMultiplier(id: bigint): Promise<number> {
   const rows = await sql`
