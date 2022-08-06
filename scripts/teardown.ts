@@ -30,7 +30,7 @@ console.groupEnd();
 console.group('Dropping table "xp"...');
 
 await sql`
-  DROP TABLE xp
+  DROP TABLE IF EXISTS xp
 `;
 
 console.log('Success.');
