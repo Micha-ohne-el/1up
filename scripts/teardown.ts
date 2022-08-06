@@ -1,5 +1,6 @@
-import {sql} from '/db.ts';
 import {readLines} from '/deps/io.ts';
+import postgres from '/deps/postgres.ts';
+import {getDbCredentials} from '/util/secrets.ts';
 
 console.warn('Are you sure? Please confirm by typing "Yes, drop all my tables, please." and then pressing Enter.');
 
@@ -13,12 +14,26 @@ for await (const line of readLines(Deno.stdin)) {
   Deno.exit();
 }
 
-console.log('Dropping table "xp"...');
+console.group('Connecting to database...');
+
+const sql = postgres(
+  {
+    host: 'localhost',
+    database: 'oneup',
+    ...getDbCredentials(),
+  }
+)
+
+console.log('Success.');
+console.groupEnd();
+
+console.group('Dropping table "xp"...');
 
 await sql`
   DROP TABLE xp
 `;
 
 console.log('Success.');
+console.groupEnd();
 
 Deno.exit();

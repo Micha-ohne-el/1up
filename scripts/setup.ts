@@ -1,6 +1,20 @@
-import {sql} from '/db.ts';
+import postgres from '/deps/postgres.ts';
+import {getDbCredentials} from '/util/secrets.ts';
 
-console.log('Creating table "xp"...');
+console.group('Connecting to database...');
+
+const sql = postgres(
+  {
+    host: 'localhost',
+    database: 'oneup',
+    ...getDbCredentials(),
+  }
+)
+
+console.log('Success.');
+console.groupEnd();
+
+console.group('Creating table "xp"...');
 
 await sql`
   CREATE TABLE xp (
@@ -12,5 +26,6 @@ await sql`
 `;
 
 console.log('Success.');
+console.groupEnd();
 
 Deno.exit();
