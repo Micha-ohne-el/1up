@@ -1,7 +1,7 @@
 import {createBot, startBot, Intents, addReaction, sendMessage, Message} from '/deps/discordeno.ts';
 import {getBotToken} from '/util/secrets.ts';
 import {handleMessage} from '/business/handle-message.ts';
-import {handleCommand, isBooleanStatus, isReplyStatus} from '/business/handle-command.ts';
+import {handleCommand} from '/business/handle-command.ts';
 
 export async function connect() {
   await startBot(bot);
@@ -39,21 +39,23 @@ function isCommandMessage(message: Message) {
 }
 
 async function handleCommandMessage(message: Message) {
-  const status = await handleCommand(message.content);
+  const response = await handleCommand(message.content);
 
-  if (!status) {
+  if (!response) {
     return;
   }
 
-  if (isBooleanStatus(status)) {
-    await addReaction(bot, message.channelId, message.id, status.success ? '✅' : '❌');
-  } else if (isReplyStatus(status)) {
+  const success = response.success === undefined ? '' : response.success ? '✅' : '❌';
+
+  if (response.message !== undefined) {
     await sendMessage(bot, message.channelId, {
-      content: status.message,
+      content: [success, response.message].join(' '),
       messageReference: {
         ...message,
-        failIfNotExists: false,
+        failIfNotExists: false
       }
-    })
+    });
+  } else if (success) {
+    await addReaction(bot, message.channelId, message.id, success);
   }
 }

@@ -6,12 +6,12 @@ export class InvalidBotToken extends Error {
 
 export class InvalidDbUsername extends Error {
   constructor(dbUsername: unknown) {
-    super(`Invalid bot token: ${dbUsername}.`);
+    super(`Invalid database username: ${dbUsername}.`);
   }
 }
 
 export class InvalidDbPassword extends Error {
   constructor(dbPassword: unknown) {
-    super(`Invalid bot token: ${dbPassword}.`);
+    super(`Invalid database password: ${dbPassword}.`);
   }
 }

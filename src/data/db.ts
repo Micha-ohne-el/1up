@@ -43,7 +43,7 @@ export const sql = postgres(
     database: 'oneup',
     ...getDbCredentials(),
   }
-)
+);
 
 interface Row {
   guildId: bigint;
