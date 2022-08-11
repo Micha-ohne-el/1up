@@ -1,4 +1,4 @@
-import {setXpMultiplier, setXpRange} from "../data/multipliers.ts";
+import {setXpMultiplier, setXpRange} from '/data/multipliers.ts';
 
 export async function handleCommand(context: CommandContext): Promise<Response | void> {
   for (const [name, command] of Object.entries(commands)) {
