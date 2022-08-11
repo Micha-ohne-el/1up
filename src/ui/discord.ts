@@ -16,8 +16,9 @@ const bot = createBot(
       | Intents.GuildMessages | Intents.GuildMessageReactions
       | Intents.DirectMessages | Intents.DirectMessageReactions,
     events: {
-      ready(bot) {
-        console.log(`Successfully logged in with ID ${bot.id}`);
+      async ready(bot) {
+        console.log(`Successfully logged in!`);
+        console.log(`Bot User: ${formatUser(await getUser(bot, bot.id))}`);
       },
       async messageCreate(bot, message) {
         if (message.isBot || message.authorId === bot.id) {
