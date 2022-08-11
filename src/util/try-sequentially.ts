@@ -1,8 +1,10 @@
-export function trySequentially(...functions: (() => void)[]) {
+export async function trySequentially(...functions: (() => Promise<unknown>)[]) {
   for (const func of functions) {
     try {
-      func();
-    } catch {
+      await func();
+    } catch (error: unknown) {
+      console.warn(error);
+
       continue;
     }
 
@@ -10,7 +12,7 @@ export function trySequentially(...functions: (() => void)[]) {
   }
 }
 
-export function trySequentiallyAndLog(...functions: (() => void)[]) {
+export function trySequentiallySync(...functions: (() => unknown)[]) {
   for (const func of functions) {
     try {
       func();

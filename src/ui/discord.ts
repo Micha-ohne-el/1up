@@ -4,7 +4,7 @@ import {handleMessage} from '/business/handle-message.ts';
 import {handleCommand, CommandContext, Response} from '/business/handle-command.ts';
 import {formatUser} from '/ui/format-user.ts';
 import {mentionUser} from '/ui/mention-user.ts';
-import {trySequentiallyAndLog} from '/util/try-sequentially.ts';
+import {trySequentially} from '/util/try-sequentially.ts';
 
 export async function connect() {
   await startBot(bot);
@@ -67,7 +67,7 @@ async function handleCommandMessage(message: Message) {
     const indicator = response.success === undefined ? '' : response.success ? '✅' : '❌';
 
     if (response.message !== undefined) {
-      trySequentiallyAndLog(
+      await trySequentially(
         async () => await sendMessage(bot, message.channelId, {
           content: [indicator, response.message].join(' '),
           messageReference: {
