@@ -21,18 +21,18 @@ export interface Response {
 
 const commands: Record<string, (context: CommandContext) => Promise<Response>> = {
   async setMultiplier({text}) {
-    const tokens = text.split(/\s+/, 3);
+    const tokens = text.split(/\s+/, 3) as (string | undefined)[];
 
-    const match = tokens[1].match(/<[@#](\d+)>|(\d+)/);
+    const match = tokens[1]?.match(/<[@#](\d+)>|(\d+)/);
 
     if (!match) {
-      return {success: false};
+      return {success: false, message: 'Please provide a valid channel or role to apply the multiplier to.'};
     }
 
-    const multiplier = Number.parseFloat(tokens[2]);
+    const multiplier = Number.parseFloat(tokens[2] ?? '');
 
     if (Number.isNaN(multiplier)) {
-      return {success: false};
+      return {success: false, message: 'Please provide a valid XP multiplier.'};
     }
 
     await setXpMultiplier(BigInt(match[1] ?? match[2]), multiplier);
@@ -41,16 +41,16 @@ const commands: Record<string, (context: CommandContext) => Promise<Response>> =
   },
   async setRange({guildId, text}) {
     if (!guildId) {
-      return {success: false};
+      return {success: false, message: 'You cannot set XP ranges in DMs as of now.'};
     }
 
-    const tokens = text.split(/\s+/, 3);
+    const tokens = text.split(/\s+/, 3) as (string | undefined)[];
 
-    const first = Number.parseFloat(tokens[1]);
-    const last = Number.parseFloat(tokens[2]);
+    const first = Number.parseFloat(tokens[1] ?? '');
+    const last = Number.parseFloat(tokens[2] ?? '');
 
     if (Number.isNaN(first) || Number.isNaN(last)) {
-      return {success: false};
+      return {success: false, message: 'Please provide a valid range of XP values.'};
     }
 
     await setXpRange(guildId, first, last);
