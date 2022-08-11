@@ -19,6 +19,10 @@ export async function getChannelXpMultiplier(id: bigint): Promise<number> {
   return await getMultiplier(id);
 }
 
+export async function getCategoryXpMultiplier(id: bigint): Promise<number> {
+  return await getMultiplier(id);
+}
+
 export async function getRoleXpMultiplier(id: bigint): Promise<number> {
   return await getMultiplier(id);
 }
