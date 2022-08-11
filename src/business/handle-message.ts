@@ -1,8 +1,13 @@
 import {getRandomNumber} from '/util/random.ts';
 import {awardXpToUserInGuild} from '/data/xp.ts';
 import {getGuildXpRange, getChannelXpMultiplier, getRoleXpMultiplier} from '/data/multipliers.ts';
+import {MessageContext} from '/business/message-context.ts';
 
-export async function handleMessage(userId: bigint, guildId: bigint, channelId: bigint, roleIds: bigint[]) {
+export async function handleMessage({authorId, guildId, channelId, roleIds}: MessageContext) {
+  if (!guildId) {
+    return;
+  }
+
   const range = await getGuildXpRange(guildId);
   const rawXp = getRandomNumber(...range);
 
@@ -13,5 +18,5 @@ export async function handleMessage(userId: bigint, guildId: bigint, channelId: 
 
   console.log({range, rawXp, channelMultiplier, roleMultipliers, xp});
 
-  await awardXpToUserInGuild(guildId, userId, xp);
+  await awardXpToUserInGuild(guildId, authorId, xp);
 }

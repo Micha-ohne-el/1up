@@ -1,16 +1,15 @@
 import {setXpMultiplier, setXpRange} from '/data/multipliers.ts';
+import {MessageContext} from '/business/message-context.ts';
 
-export async function handleCommand(context: CommandContext): Promise<Response | void> {
+export async function handleCommand(text: string, context: MessageContext): Promise<Response | void> {
   for (const [name, command] of Object.entries(commands)) {
-    const pos = context.text.toLowerCase().indexOf(name.toLowerCase());
+    const pos = text.toLowerCase().indexOf(name.toLowerCase());
 
     if (pos === -1) {
       continue;
     }
 
-    context.text = context.text.slice(pos);
-
-    return await command(context);
+    return await command(text.slice(pos), context);
   }
 }
 
@@ -19,8 +18,8 @@ export interface Response {
   message?: string;
 }
 
-const commands: Record<string, (context: CommandContext) => Promise<Response>> = {
-  async setMultiplier({text}) {
+const commands: Record<string, (text: string, context: MessageContext) => Promise<Response>> = {
+  async setMultiplier(text) {
     const tokens = text.split(/\s+/, 3) as (string | undefined)[];
 
     const match = tokens[1]?.match(/<[@#](\d+)>|(\d+)/);
@@ -39,7 +38,7 @@ const commands: Record<string, (context: CommandContext) => Promise<Response>> =
 
     return {success: true};
   },
-  async setRange({guildId, text}) {
+  async setRange(text, {guildId}) {
     if (!guildId) {
       return {success: false, message: 'You cannot set XP ranges in DMs as of now.'};
     }
@@ -58,11 +57,3 @@ const commands: Record<string, (context: CommandContext) => Promise<Response>> =
     return {success: true};
   }
 };
-
-export interface CommandContext {
-  text: string;
-  guildId: bigint | undefined;
-  userId: bigint;
-  channelId: bigint;
-  roleIds: bigint[];
-}
