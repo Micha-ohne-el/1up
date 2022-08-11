@@ -33,6 +33,16 @@ export async function setXpMultiplier(id: bigint, value: number): Promise<void> 
   `;
 }
 
+export async function setXpRange(guildId: bigint, first: number, last: number): Promise<void> {
+  await sql`
+    INSERT INTO range
+    VALUES (${guildId.toString()}, ${first}, ${last})
+    ON CONFLICT (guildId)
+    DO UPDATE
+      SET first = ${first}, last = ${last}
+  `;
+}
+
 const fallbackMultiplier = 1;
 async function getMultiplier(id: bigint): Promise<number> {
   const rows = await sql`

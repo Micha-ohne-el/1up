@@ -1,7 +1,7 @@
 import {createBot, startBot, Intents, addReaction, sendMessage, Message} from '/deps/discordeno.ts';
 import {getBotToken} from '/util/secrets.ts';
 import {handleMessage} from '/business/handle-message.ts';
-import {handleCommand} from '/business/handle-command.ts';
+import {handleCommand, CommandContext} from '/business/handle-command.ts';
 
 export async function connect() {
   await startBot(bot);
@@ -39,7 +39,15 @@ function isCommandMessage(message: Message) {
 }
 
 async function handleCommandMessage(message: Message) {
-  const response = await handleCommand(message.content);
+  const context: CommandContext = {
+    text: message.content,
+    guildId: message.guildId,
+    userId: message.authorId,
+    channelId: message.channelId,
+    roleIds: message.member?.roles ?? []
+  };
+
+  const response = await handleCommand(context);
 
   if (!response) {
     return;
