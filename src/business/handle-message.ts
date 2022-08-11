@@ -11,9 +11,11 @@ export async function handleMessage({authorId, guildId, channelId, categoryId, r
   const range = await getGuildXpRange(guildId);
   const rawXp = getRandomNumber(...range);
 
-  const channelMultiplier = await getChannelXpMultiplier(channelId);
-  const categoryMultiplier = categoryId ? await getCategoryXpMultiplier(categoryId) : 1;
-  const roleMultipliers = await Promise.all(roleIds.map(getRoleXpMultiplier));
+  const [channelMultiplier, categoryMultiplier, ...roleMultipliers] = await Promise.all([
+    getChannelXpMultiplier(channelId),
+    categoryId ? await getCategoryXpMultiplier(categoryId) : 1,
+    ...roleIds.map(getRoleXpMultiplier)
+  ]);
 
   const xp = [channelMultiplier, categoryMultiplier, ...roleMultipliers].reduce((sum, val) => sum * val, rawXp);
 
