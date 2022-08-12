@@ -1,3 +1,3 @@
-import {connect} from '/ui/discord.ts';
+import {connect} from '/ui/discord/mod.ts';
 
 connect();

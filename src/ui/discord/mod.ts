@@ -1,11 +1,10 @@
-import {createBot, startBot, Intents, addReaction, sendMessage, Message, getUser, getChannel} from '/deps/discordeno.ts';
+import {createBot, startBot, Intents, Message, getUser, getChannel} from '/deps/discordeno.ts';
 import {getBotToken} from '/util/secrets.ts';
 import {MessageContext} from '/business/message-context.ts';
 import {handleMessage} from '/business/handle-message.ts';
-import {handleCommand, Response} from '/business/handle-command.ts';
-import {formatUser} from '/ui/format-user.ts';
-import {mentionUser} from '/ui/mention-user.ts';
-import {trySequentially} from '/util/try-sequentially.ts';
+import {formatUser} from '/ui/discord/format-user.ts';
+import {respond} from '/ui/discord/respond.ts';
+import {handleCommand} from '/business/handle-command.ts';
 
 export async function connect() {
   await startBot(bot);
@@ -54,31 +53,7 @@ async function handleCommandMessage(text: string, context: MessageContext) {
     return;
   }
 
-  await respond(response);
-
-  async function respond(response: Response) {
-    const indicator = response.success === undefined ? '' : response.success ? '✅' : '❌';
-
-    if (response.message !== undefined) {
-      await trySequentially(
-        async () => await sendMessage(bot, context.channelIds[0], {
-          content: [indicator, response.message].join(' '),
-          messageReference: {
-            messageId: context.messageId,
-            guildId: context.guildId,
-            channelId: context.channelIds[0],
-            failIfNotExists: true
-          }
-        }),
-        async () => await sendMessage(bot, context.channelIds[0], {
-          content: [indicator, mentionUser(context.authorId), response.message].join(' ')
-        }),
-        async () => await addReaction(bot, context.channelIds[0], context.messageId, indicator)
-      );
-    } else if (indicator) {
-      await addReaction(bot, context.channelIds[0], context.messageId, indicator);
-    }
-  }
+  await respond(bot, response, context);
 }
 
 async function getContextFromMessage(message: Message): Promise<MessageContext> {
