@@ -1,5 +1,6 @@
 import {setXpMultiplier, setXpRange} from '/data/multipliers.ts';
 import {MessageContext} from '/business/message-context.ts';
+import {getLevelFromXp, getXpOfUserInGuild} from '/data/xp.ts';
 
 export async function handleCommand(text: string, context: MessageContext): Promise<Response | void> {
   for (const [name, command] of Object.entries(commands)) {
@@ -55,5 +56,28 @@ const commands: Record<string, (text: string, context: MessageContext) => Promis
     await setXpRange(guildId, first, last);
 
     return {success: true};
+  },
+  async rank(text, {authorId, guildId}) {
+    if (!guildId) {
+      return {success: false, message: "You cannot get a user's rank in DMs as of now."};
+    }
+
+    const tokens = text.split(/\s+/, 2) as (string | undefined)[];
+
+    const match = tokens[1]?.match(/<[@](\d+)>|(\d+)/);
+
+    const userId = match ? BigInt(match[1]) : authorId;
+
+    const xp = await getXpOfUserInGuild(guildId, userId);
+
+    if (match) {
+      return {
+        message: `This user is at level ${getLevelFromXp(xp)}, with ${xp} XP.`
+      };
+    } else {
+      return {
+        message: `You are at level ${getLevelFromXp(xp)}, with ${xp} XP.`
+      }
+    }
   }
 };
