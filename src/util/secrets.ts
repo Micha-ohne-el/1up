@@ -1,4 +1,4 @@
-import {InvalidBotToken, InvalidDbUsername, InvalidDbPassword} from '/util/errors.ts';
+import {InvalidBotToken, InvalidDbUsername, InvalidDbPassword, InvalidOwnerId} from '/util/errors.ts';
 
 export function getBotToken() {
   const botToken = Deno.env.get('1UP_BOT_TOKEN')
@@ -25,4 +25,18 @@ export function getDbCredentials() {
     username,
     password
   };
+}
+
+export function getOwnerId() {
+  const ownerId = Deno.env.get('1UP_OWNER_ID');
+
+  if (!ownerId) {
+    return undefined;
+  }
+
+  try {
+    return BigInt(ownerId);
+  } catch {
+    throw new InvalidOwnerId(ownerId);
+  }
 }

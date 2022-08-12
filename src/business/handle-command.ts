@@ -20,7 +20,7 @@ export interface Response {
 }
 
 const commands: Record<string, (text: string, context: MessageContext) => Promise<Response>> = {
-  async setMultiplier(text) {
+  async setMultiplier(text, {canEdit}) {
     const tokens = text.split(/\s+/, 3) as (string | undefined)[];
 
     const match = tokens[1]?.match(/<[@#](\d+)>|(\d+)/);
@@ -35,13 +35,23 @@ const commands: Record<string, (text: string, context: MessageContext) => Promis
       return {success: false, message: 'Please provide a valid XP multiplier.'};
     }
 
-    await setXpMultiplier(BigInt(match[1] ?? match[2]), multiplier);
+    const id = BigInt(match[1] ?? match[2])
+
+    if (!canEdit(id)) {
+      return {success: false};
+    }
+
+    await setXpMultiplier(id, multiplier);
 
     return {success: true};
   },
-  async setRange(text, {guildId}) {
+  async setRange(text, {guildId, canEdit}) {
     if (!guildId) {
       return {success: false, message: 'You cannot set XP ranges in DMs as of now.'};
+    }
+
+    if (!canEdit(guildId)) {
+      return {success: false};
     }
 
     const tokens = text.split(/\s+/, 3) as (string | undefined)[];

@@ -15,3 +15,9 @@ export class InvalidDbPassword extends Error {
     super(`Invalid database password: ${dbPassword}.`);
   }
 }
+
+export class InvalidOwnerId extends Error {
+  constructor(ownerId: unknown) {
+    super(`Invalid owner ID: ${ownerId}.`);
+  }
+}

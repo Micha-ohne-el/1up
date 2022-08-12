@@ -4,4 +4,5 @@ export interface MessageContext {
   authorId: bigint;
   channelIds: bigint[];
   roleIds: bigint[];
+  canEdit(id: bigint): boolean;
 }
