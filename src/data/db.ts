@@ -25,16 +25,21 @@ export async function awardXp(guildId: bigint, userId: bigint, amount: number) {
   `;
 }
 
-export async function getXpWhere(conditions: Partial<Row> | string) {
-  const condition = Object.entries(conditions).map(([key, value]) => `${key} = ${value}`).join(' AND ');
-
-  const rows = await sql`
+export async function getXp(userId: bigint, guildId: bigint) {
+  return await sql`
     SELECT xp
     FROM xp
-    WHERE ${condition}
+    WHERE userId = ${userId.toString()}
+      AND guildId = ${guildId.toString()}
   `;
+}
 
-  return rows.reduce((acc: number[], row) => [...acc, row['xp']], []);
+export async function getGlobalXp(userId: bigint) {
+  return await sql`
+    SELECT xp
+    FROM xp
+    WHERE userId = ${userId.toString()}
+  `;
 }
 
 export const sql = postgres(
@@ -44,9 +49,3 @@ export const sql = postgres(
     ...getDbCredentials(),
   }
 );
-
-interface Row {
-  guildId: bigint;
-  userId: bigint;
-  xp: number;
-}
