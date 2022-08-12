@@ -20,3 +20,7 @@ Create a new database called `oneup`.
 Run `deno task setup`.
 
 You should now be able to start the bot using `deno task run`.
+
+You can optionally set the environment variable `1UP_OWNER_ID` to your Discord
+user ID to allow setting configs through Discord.  
+This is temporary and will be removed once better access control is implemented.
