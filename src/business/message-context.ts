@@ -1,8 +1,7 @@
 export interface MessageContext {
   messageId: bigint;
   guildId?: bigint;
-  channelId: bigint;
   authorId: bigint;
+  channelIds: bigint[];
   roleIds: bigint[];
-  categoryId?: bigint;
 }

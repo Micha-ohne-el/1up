@@ -61,22 +61,22 @@ async function handleCommandMessage(text: string, context: MessageContext) {
 
     if (response.message !== undefined) {
       await trySequentially(
-        async () => await sendMessage(bot, context.channelId, {
+        async () => await sendMessage(bot, context.channelIds[0], {
           content: [indicator, response.message].join(' '),
           messageReference: {
             messageId: context.messageId,
             guildId: context.guildId,
-            channelId: context.channelId,
+            channelId: context.channelIds[0],
             failIfNotExists: true
           }
         }),
-        async () => await sendMessage(bot, context.channelId, {
+        async () => await sendMessage(bot, context.channelIds[0], {
           content: [indicator, mentionUser(context.authorId), response.message].join(' ')
         }),
-        async () => await addReaction(bot, context.channelId, context.messageId, indicator)
+        async () => await addReaction(bot, context.channelIds[0], context.messageId, indicator)
       );
     } else if (indicator) {
-      await addReaction(bot, context.channelId, context.messageId, indicator);
+      await addReaction(bot, context.channelIds[0], context.messageId, indicator);
     }
   }
 }
@@ -85,9 +85,26 @@ async function getContextFromMessage(message: Message): Promise<MessageContext> 
   return {
     messageId: message.id,
     authorId: message.authorId,
-    channelId: message.channelId,
     guildId: message.guildId,
-    categoryId: (await getChannel(bot, message.channelId))?.parentId,
-    roleIds: message.member?.roles ?? []
+    channelIds: await getChannelHierarchy(message.channelId),
+    roleIds: message.member?.roles ?? [],
   };
+}
+
+const isChannelHierarchyEnabled = false;
+async function getChannelHierarchy(channelId: bigint): Promise<bigint[]> {
+  if (!isChannelHierarchyEnabled) {
+    return [channelId];
+  }
+
+  let id: bigint | undefined = channelId;
+  const ids = [];
+
+  while (id) {
+    ids.push(id);
+
+    id = (await getChannel(bot, id))?.parentId;
+  }
+
+  return ids;
 }
