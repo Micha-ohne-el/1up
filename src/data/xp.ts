@@ -1,11 +1,11 @@
 import {getXp, getGlobalXp, awardXp} from './db.ts';
 
 export async function getXpOfUserInGuild(guildId: bigint, userId: bigint) {
-  return (await getXp(userId, guildId))[0]['xp'];
+  return (await getXp(userId, guildId))?.[0]?.['xp'] ?? 0;
 }
 
 export async function getXpOfUserGlobally(userId: bigint) {
-  return (await getGlobalXp(userId)).reduce((sum, row) => sum + row['xp'], 0);
+  return (await getGlobalXp(userId)).reduce((sum, row) => sum + (row?.['xp'] ?? 0), 0);
 }
 
 export async function awardXpToUserInGuild(guildId: bigint, userId: bigint, amount: number) {
