@@ -1,7 +1,7 @@
 {
   "importMap": "./import-map.json",
   "tasks": {
-    "run": "deno run --config './deno.json' --unstable --allow-env --allow-net='discord.com,gateway.discord.gg,localhost' ./src/main.ts",
+    "run": "deno run --config './deno.json' --unstable --allow-env --allow-net='discord.com,gateway.discord.gg,localhost' --allow-read='.env,.env.example,.env.defaults' ./src/main.ts",
     "setup": "deno run --config './deno.json' --unstable --allow-env --allow-net='localhost' ./scripts/setup.ts",
     "teardown": "deno run --config './deno.json' --unstable --allow-env --allow-net='localhost' ./scripts/teardown.ts"
   },

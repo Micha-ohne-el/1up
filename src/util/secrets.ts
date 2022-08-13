@@ -1,7 +1,7 @@
 import {InvalidBotToken, InvalidDbUsername, InvalidDbPassword, InvalidOwnerId} from '/util/errors.ts';
 
 export function getBotToken() {
-  const botToken = Deno.env.get('1UP_BOT_TOKEN')
+  const botToken = Deno.env.get('ONEUP_BOT_TOKEN')
 
   if (!botToken) {
     throw new InvalidBotToken(botToken);
@@ -11,8 +11,8 @@ export function getBotToken() {
 }
 
 export function getDbCredentials() {
-  const username = Deno.env.get('1UP_DB_USERNAME');
-  const password = Deno.env.get('1UP_DB_PASSWORD');
+  const username = Deno.env.get('ONEUP_DB_USERNAME');
+  const password = Deno.env.get('ONEUP_DB_PASSWORD');
 
   if (!password) {
     throw new InvalidDbUsername(password);
@@ -28,7 +28,7 @@ export function getDbCredentials() {
 }
 
 export function getOwnerId() {
-  const ownerId = Deno.env.get('1UP_OWNER_ID');
+  const ownerId = Deno.env.get('ONEUP_OWNER_ID');
 
   if (!ownerId) {
     return undefined;
