@@ -26,13 +26,27 @@ const commands: Record<string, (text: string, context: MessageContext) => Promis
     const match = tokens[1]?.match(/<[@#](\d+)>|(\d+)/);
 
     if (!match) {
-      return {success: false, message: 'Please provide a valid channel or role to apply the multiplier to.'};
+      return {
+        success: false, message: `Syntax:
+\`\`\`
+setMultiplier {id: Id | Snowflake} {multiplier: Number}
+              ~~~~~~~~~~~~~~~~~~~~
+\`\`\`
+`
+      };
     }
 
     const multiplier = Number.parseFloat(tokens[2] ?? '');
 
     if (Number.isNaN(multiplier)) {
-      return {success: false, message: 'Please provide a valid XP multiplier.'};
+      return {
+        success: false, message: `Syntax:
+\`\`\`
+setMultiplier {id: Id | Snowflake} {multiplier: Number}
+                                   ~~~~~~~~~~~~~~~~~~~~
+\`\`\`
+`
+      };
     }
 
     const id = BigInt(match[1] ?? match[2])
@@ -60,7 +74,14 @@ const commands: Record<string, (text: string, context: MessageContext) => Promis
     const last = Number.parseFloat(tokens[2] ?? '');
 
     if (Number.isNaN(first) || Number.isNaN(last)) {
-      return {success: false, message: 'Please provide a valid range of XP values.'};
+      return {
+        success: false, message: `Syntax:
+\`\`\`
+setRange {start: Number} {end: Number}
+         ~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~
+\`\`\`
+`
+      };
     }
 
     await setXpRange(guildId, first, last);
