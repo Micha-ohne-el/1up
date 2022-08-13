@@ -144,7 +144,7 @@ setRole {level: Integer} {role: Id | Snowflake}
 
     return {success: true};
   },
-  async rank(text, {authorId, guildId}) {
+  async level(text, {authorId, guildId}) {
     if (!guildId) {
       return {success: false, message: "You cannot get a user's rank in DMs as of now."};
     }
