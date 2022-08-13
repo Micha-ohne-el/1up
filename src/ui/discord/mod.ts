@@ -68,6 +68,11 @@ async function handleUpdate({oldLevel, newLevel}: Update, context: MessageContex
   const oldRoleId = await getLevelRoleId(context.guildId!, oldLevel);
   const newRoleId = await getLevelRoleId(context.guildId!, newLevel);
 
+  if (oldRoleId == newRoleId) {
+    console.log('Nothing to do.');
+    return;
+  }
+
   if (oldRoleId) {
     try {
       await removeRole(bot, context.guildId!, context.authorId, oldRoleId, 'Level up!');
