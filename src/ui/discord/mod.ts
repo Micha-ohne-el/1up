@@ -1,10 +1,11 @@
-import {createBot, startBot, Intents, Message, getUser, getChannel} from '/deps/discordeno.ts';
+import {createBot, startBot, Intents, Message, getUser, getChannel, removeRole, addRole, getRoles} from '/deps/discordeno.ts';
 import {getBotToken, getOwnerId} from '/util/secrets.ts';
 import {MessageContext} from '/business/message-context.ts';
-import {handleMessage} from '/business/handle-message.ts';
+import {handleMessage, Update, shouldUpdate} from '/business/handle-message.ts';
 import {formatUser} from '/ui/discord/format-user.ts';
 import {respond} from '/ui/discord/respond.ts';
 import {handleCommand} from '/business/handle-command.ts';
+import {getLevelRoleId} from '/data/roles.ts';
 
 export async function connect() {
   await startBot(bot);
@@ -29,10 +30,15 @@ const bot = createBot(
         }
 
         try {
+          const context = await getContextFromMessage(message)
           if (isCommandMessage(message)) {
-            await handleCommandMessage(message.content, await getContextFromMessage(message));
+            await handleCommandMessage(message.content, context);
           } else {
-            await handleMessage(await getContextFromMessage(message));
+            const update = await handleMessage(context);
+
+            if (update && shouldUpdate(update)) {
+              await handleUpdate(update, context);
+            }
           }
         } catch (error: unknown) {
           console.error(error);
@@ -56,6 +62,30 @@ async function handleCommandMessage(text: string, context: MessageContext) {
   await respond(bot, response, context);
 }
 
+async function handleUpdate({oldLevel, newLevel}: Update, context: MessageContext) {
+  console.log(`Updating roles for user ${context.authorId} in guild ${context.guildId} (${oldLevel} => ${newLevel})...`);
+
+  const oldRoleId = await getLevelRoleId(context.guildId!, oldLevel);
+  const newRoleId = await getLevelRoleId(context.guildId!, newLevel);
+
+  if (oldRoleId) {
+    try {
+      await removeRole(bot, context.guildId!, context.authorId, oldRoleId, 'Level up!');
+      console.log(`Removed role ${oldRoleId} from ${context.authorId}.`);
+    } catch (e: unknown) {
+      console.error(e);
+    }
+  }
+  if (newRoleId) {
+    try {
+      await addRole(bot, context.guildId!, context.authorId, newRoleId, 'Level up!');
+      console.log(`Added role ${newRoleId} to ${context.authorId}.`);
+    } catch (e: unknown) {
+      console.error(e);
+    }
+  }
+}
+
 async function getContextFromMessage(message: Message): Promise<MessageContext> {
   return {
     messageId: message.id,
@@ -69,6 +99,11 @@ async function getContextFromMessage(message: Message): Promise<MessageContext> 
       }
 
       return false;
+    },
+    async isRole(id) {
+      const roles = await getRoles(bot, message.guildId ?? 0n);
+
+      return roles.has(id);
     }
   };
 }

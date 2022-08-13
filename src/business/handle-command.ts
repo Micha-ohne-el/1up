@@ -1,6 +1,7 @@
 import {setXpMultiplier, setXpRange} from '/data/multipliers.ts';
 import {MessageContext} from '/business/message-context.ts';
 import {getLevelFromXp, getXpOfUserInGuild} from '/data/xp.ts';
+import {setLevelRoleId} from '/data/roles.ts';
 
 export async function handleCommand(text: string, context: MessageContext): Promise<Response | void> {
   for (const [name, command] of Object.entries(commands)) {
@@ -85,6 +86,61 @@ setRange {start: Number} {end: Number}
     }
 
     await setXpRange(guildId, first, last);
+
+    return {success: true};
+  },
+  async setRole(text, {guildId, canEdit, isRole}) {
+    if (!guildId) {
+      return {success: false, message: 'You cannot set roles in DMs as of now.'};
+    }
+
+    if (!canEdit(guildId)) {
+      return {success: false};
+    }
+
+    const tokens = text.split(/\s+/, 3) as (string | undefined)[];
+
+    const level = Number.parseInt(tokens[1] ?? '', 10);
+
+    if (Number.isNaN(level) || level < 0) {
+      return {
+        success: false, message: `Syntax:
+\`\`\`
+setRole {level: Integer} {role: Id | Snowflake}
+        ~~~~~~~~~~~~~~~~
+\`\`\`
+`
+      };
+    }
+
+
+    const match = tokens[2]?.match(/<[@](\d+)>|(\d+)/);
+
+    if (!match) {
+      return {
+        success: false, message: `Syntax:
+\`\`\`
+setRole {level: Integer} {role: Id | Snowflake}
+                         ~~~~~~~~~~~~~~~~~~~~~~
+\`\`\`
+`
+      };
+    }
+
+    const roleId = BigInt(match[1] ?? match[2]);
+
+    if (!await isRole(roleId)) {
+      return {
+        success: false, message: `Syntax:
+\`\`\`
+setRole {level: Integer} {role: Id | Snowflake}
+                         ~~~~~~~~~~~~~~~~~~~~~~
+\`\`\`
+`
+      };
+    }
+
+    await setLevelRoleId(guildId, level, roleId);
 
     return {success: true};
   },

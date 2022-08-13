@@ -5,4 +5,5 @@ export interface MessageContext {
   channelIds: bigint[];
   roleIds: bigint[];
   canEdit(id: bigint): boolean;
+  isRole(id: bigint): Promise<boolean>;
 }

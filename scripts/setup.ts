@@ -55,4 +55,18 @@ await sql`
 console.log('Success.');
 console.groupEnd();
 
+console.group('Creating table "role"...');
+
+await sql`
+  CREATE TABLE role (
+    guildId bigint,
+    level integer,
+    roleId bigint NOT NULL,
+    PRIMARY KEY(guildId, level)
+  )
+`;
+
+console.log('Success.');
+console.groupEnd();
+
 Deno.exit();
