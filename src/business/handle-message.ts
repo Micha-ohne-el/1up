@@ -23,8 +23,6 @@ export async function handleMessage({authorId, guildId, channelIds, roleIds}: Me
 
   const xp = [...channelMultipliers, ...roleMultipliers].reduce((sum, val) => sum * val, rawXp);
 
-  console.log({range, rawXp, channelMultipliers, roleMultipliers, xp});
-
   await awardXpToUserInGuild(guildId, authorId, xp);
 
   return {
