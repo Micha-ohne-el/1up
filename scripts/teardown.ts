@@ -53,4 +53,12 @@ await sql`
 
 info('Success.');
 
+info('Dropping table "role"...');
+
+await sql`
+  DROP TABLE IF EXISTS role
+`;
+
+info('Success.');
+
 Deno.exit();
