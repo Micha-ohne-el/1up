@@ -16,13 +16,14 @@ const sql = postgres(
 
 info('Success.');
 
-info('Creating table "xp"...');
+info('Creating table "stats"...');
 
 await sql`
-  CREATE TABLE xp (
+  CREATE TABLE stats (
     guildId bigint,
     userId bigint,
-    xp real NOT NULL,
+    xp integer NOT NULL,
+    messages integer NOT NULL,
     PRIMARY KEY(guildId, userId)
   )
 `;

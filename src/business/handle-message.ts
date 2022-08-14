@@ -1,5 +1,5 @@
 import {getRandomNumber} from '/util/random.ts';
-import {awardXpToUserInGuild, getLevelFromXp, getXpOfUserInGuild} from '/data/xp.ts';
+import {awardXpAndMessagesToUserInGuild, getLevelFromXp, getXpOfUserInGuild} from '/data/xp.ts';
 import {getGuildXpRange, getChannelXpMultiplier, getRoleXpMultiplier} from '/data/multipliers.ts';
 import {MessageContext} from '/business/message-context.ts';
 
@@ -21,9 +21,9 @@ export async function handleMessage({authorId, guildId, channelIds, roleIds}: Me
     channelMultipliersPromise, roleMultipliersPromise
   ]);
 
-  const xp = [...channelMultipliers, ...roleMultipliers].reduce((sum, val) => sum * val, rawXp);
+  const xp = Math.round([...channelMultipliers, ...roleMultipliers].reduce((sum, val) => sum * val, rawXp));
 
-  await awardXpToUserInGuild(guildId, authorId, xp);
+  await awardXpAndMessagesToUserInGuild(guildId, authorId, xp, 1);
 
   return {
     oldLevel: previousLevel,

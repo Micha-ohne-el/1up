@@ -29,10 +29,10 @@ const sql = postgres(
 
 info('Success.');
 
-info('Dropping table "xp"...');
+info('Dropping table "stats"...');
 
 await sql`
-  DROP TABLE IF EXISTS xp
+  DROP TABLE IF EXISTS stats
 `;
 
 info('Success.');

@@ -1,16 +1,9 @@
 import postgres from '/deps/postgres.ts';
 import {getDbCredentials} from '/util/secrets.ts';
 
-export async function getAll() {
-  return await sql`
-    SELECT *
-    FROM xp
-  `;
-}
-
 export async function awardXp(guildId: bigint, userId: bigint, amount: number) {
   return await sql`
-    INSERT INTO xp (
+    INSERT INTO stats (
       guildId, userId, xp
     )
     VALUES (
@@ -18,9 +11,26 @@ export async function awardXp(guildId: bigint, userId: bigint, amount: number) {
     )
     ON CONFLICT (guildId, userId)
     DO UPDATE
-      SET xp = xp.xp + ${amount}
-      WHERE xp.guildId = ${guildId.toString()}
-        AND xp.userId = ${userId.toString()}
+      SET xp = stats.xp + ${amount}
+      WHERE stats.guildId = ${guildId.toString()}
+        AND stats.userId = ${userId.toString()}
+    RETURNING *
+  `;
+}
+
+export async function awardXpAndMessages(guildId: bigint, userId: bigint, xp: number, messages: number) {
+  return await sql`
+    INSERT INTO stats (
+      guildId, userId, xp, messages
+    )
+    VALUES (
+      ${guildId.toString()}, ${userId.toString()}, ${xp}, ${messages}
+    )
+    ON CONFLICT (guildId, userId)
+    DO UPDATE
+      SET xp = stats.xp + ${xp}, messages = stats.messages + ${messages}
+      WHERE stats.guildId = ${guildId.toString()}
+        AND stats.userId = ${userId.toString()}
     RETURNING *
   `;
 }
@@ -28,7 +38,7 @@ export async function awardXp(guildId: bigint, userId: bigint, amount: number) {
 export async function getXp(userId: bigint, guildId: bigint) {
   return await sql`
     SELECT xp
-    FROM xp
+    FROM stats
     WHERE userId = ${userId.toString()}
       AND guildId = ${guildId.toString()}
   `;
@@ -37,7 +47,7 @@ export async function getXp(userId: bigint, guildId: bigint) {
 export async function getGlobalXp(userId: bigint) {
   return await sql`
     SELECT xp
-    FROM xp
+    FROM stats
     WHERE userId = ${userId.toString()}
   `;
 }
