@@ -192,5 +192,24 @@ logs [amount: Integer = 20]
     return {
       message: '```\n' + logMemory.get(amount).join('\n') + '\n```'
     }
+  },
+  async status(_text, {authorId}) {
+    if (authorId !== getOwnerId()) {
+      return {sucess: false, message: 'You do not have permission to view the bot status.'};
+    }
+
+    const loadAverages = Deno.loadavg().map(num => `${num * 100}%`).join('/');
+    const memoryInfo = Deno.systemMemoryInfo();
+    const memoryStatus = `${Math.floor(memoryInfo.available / 1024)} MB / ${Math.floor(memoryInfo.total / 1024)} MB available`;
+
+    return {
+      message: `**CPU Load averages (past 5/10/15 minutes):** ${loadAverages}
+**Memory status:** ${memoryStatus}
+**Recent logs:**
+\`\`\`
+${logMemory.get(20).join('\n')}
+\`\`\`
+`
+    }
   }
 };
