@@ -3,20 +3,21 @@ import '/deps/dotenv-load.ts';
 import {readLines} from '/deps/io.ts';
 import postgres from '/deps/postgres.ts';
 import {getDbCredentials} from '/util/secrets.ts';
+import {warning, info} from '/deps/log.ts';
 
-console.warn('Are you sure? Please confirm by typing "Yes, drop all my tables, please." and then pressing Enter.');
+warning('Are you sure? Please confirm by typing "Yes, drop all my tables, please." and then pressing Enter.');
 
 for await (const line of readLines(Deno.stdin)) {
   if (line === 'Yes, drop all my tables, please.') {
-    console.log('Okay.');
+    info('Okay.');
     break;
   }
 
-  console.log('Aborting.');
+  info('Aborting.');
   Deno.exit();
 }
 
-console.group('Connecting to database...');
+info('Connecting to database...');
 
 const sql = postgres(
   {
@@ -26,34 +27,30 @@ const sql = postgres(
   }
 )
 
-console.log('Success.');
-console.groupEnd();
+info('Success.');
 
-console.group('Dropping table "xp"...');
+info('Dropping table "xp"...');
 
 await sql`
   DROP TABLE IF EXISTS xp
 `;
 
-console.log('Success.');
-console.groupEnd();
+info('Success.');
 
-console.group('Dropping table "range"...');
+info('Dropping table "range"...');
 
 await sql`
   DROP TABLE IF EXISTS range
 `;
 
-console.log('Success.');
-console.groupEnd();
+info('Success.');
 
-console.group('Dropping table "multiplier"...');
+info('Dropping table "multiplier"...');
 
 await sql`
   DROP TABLE IF EXISTS multiplier
 `;
 
-console.log('Success.');
-console.groupEnd();
+info('Success.');
 
 Deno.exit();

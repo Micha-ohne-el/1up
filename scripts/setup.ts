@@ -2,8 +2,9 @@ import '/deps/dotenv-load.ts';
 
 import postgres from '/deps/postgres.ts';
 import {getDbCredentials} from '/util/secrets.ts';
+import {info} from '/deps/log.ts';
 
-console.group('Connecting to database...');
+info('Connecting to database...');
 
 const sql = postgres(
   {
@@ -13,10 +14,9 @@ const sql = postgres(
   }
 )
 
-console.log('Success.');
-console.groupEnd();
+info('Success.');
 
-console.group('Creating table "xp"...');
+info('Creating table "xp"...');
 
 await sql`
   CREATE TABLE xp (
@@ -27,10 +27,9 @@ await sql`
   )
 `;
 
-console.log('Success.');
-console.groupEnd();
+info('Success.');
 
-console.group('Creating table "range"...');
+info('Creating table "range"...');
 
 await sql`
   CREATE TABLE range (
@@ -41,10 +40,9 @@ await sql`
   )
 `;
 
-console.log('Success.');
-console.groupEnd();
+info('Success.');
 
-console.group('Creating table "multiplier"...');
+info('Creating table "multiplier"...');
 
 await sql`
   CREATE TABLE multiplier (
@@ -54,10 +52,9 @@ await sql`
   )
 `;
 
-console.log('Success.');
-console.groupEnd();
+info('Success.');
 
-console.group('Creating table "role"...');
+info('Creating table "role"...');
 
 await sql`
   CREATE TABLE role (
@@ -68,7 +65,6 @@ await sql`
   )
 `;
 
-console.log('Success.');
-console.groupEnd();
+info('Success.');
 
 Deno.exit();

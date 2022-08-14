@@ -6,6 +6,7 @@ import {formatUser} from '/ui/discord/format-user.ts';
 import {respond} from '/ui/discord/respond.ts';
 import {handleCommand} from '/business/handle-command.ts';
 import {getLevelRoleId} from '/data/roles.ts';
+import {info, error} from '/deps/log.ts';
 
 export async function connect() {
   await startBot(bot);
@@ -21,8 +22,8 @@ const bot = createBot(
       | Intents.DirectMessages | Intents.DirectMessageReactions,
     events: {
       async ready(bot) {
-        console.log(`Successfully logged in!`);
-        console.log(`Bot User: ${formatUser(await getUser(bot, bot.id))}`);
+        info(`Successfully logged in!`);
+        info(`Bot User: ${formatUser(await getUser(bot, bot.id))}`);
       },
       async messageCreate(bot, message) {
         if (message.isBot || message.authorId === bot.id) {
@@ -40,8 +41,8 @@ const bot = createBot(
               await handleUpdate(update, context);
             }
           }
-        } catch (error: unknown) {
-          console.error(error);
+        } catch (e: unknown) {
+          error(e);
         }
       }
     }
@@ -63,30 +64,30 @@ async function handleCommandMessage(text: string, context: MessageContext) {
 }
 
 async function handleUpdate({oldLevel, newLevel}: Update, context: MessageContext) {
-  console.log(`Updating roles for user ${context.authorId} in guild ${context.guildId} (${oldLevel} => ${newLevel})...`);
+  info(`Updating roles for user ${context.authorId} in guild ${context.guildId} (${oldLevel} => ${newLevel})...`);
 
   const oldRoleId = await getLevelRoleId(context.guildId!, oldLevel);
   const newRoleId = await getLevelRoleId(context.guildId!, newLevel);
 
   if (oldRoleId == newRoleId) {
-    console.log('Nothing to do.');
+    info('Nothing to do.');
     return;
   }
 
   if (oldRoleId) {
     try {
       await removeRole(bot, context.guildId!, context.authorId, oldRoleId, 'Level up!');
-      console.log(`Removed role ${oldRoleId} from ${context.authorId}.`);
+      info(`Removed role ${oldRoleId} from ${context.authorId}.`);
     } catch (e: unknown) {
-      console.error(e);
+      error(e);
     }
   }
   if (newRoleId) {
     try {
       await addRole(bot, context.guildId!, context.authorId, newRoleId, 'Level up!');
-      console.log(`Added role ${newRoleId} to ${context.authorId}.`);
+      info(`Added role ${newRoleId} to ${context.authorId}.`);
     } catch (e: unknown) {
-      console.error(e);
+      error(e);
     }
   }
 }

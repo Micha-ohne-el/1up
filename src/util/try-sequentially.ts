@@ -1,9 +1,11 @@
+import {warning} from '/deps/log.ts';
+
 export async function trySequentially(...functions: (() => Promise<unknown>)[]) {
   for (const func of functions) {
     try {
       await func();
     } catch (error: unknown) {
-      console.warn(error);
+      warning(error);
 
       continue;
     }
@@ -17,7 +19,7 @@ export function trySequentiallySync(...functions: (() => unknown)[]) {
     try {
       func();
     } catch (error: unknown) {
-      console.warn(error);
+      warning(error);
 
       continue;
     }
