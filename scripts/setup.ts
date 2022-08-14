@@ -1,3 +1,5 @@
+import '/deps/dotenv-load.ts';
+
 import postgres from '/deps/postgres.ts';
 import {getDbCredentials} from '/util/secrets.ts';
 
