@@ -12,5 +12,12 @@
       "singleQuote": true,
       "useTabs": false
     }
+  },
+  "lint": {
+    "rules": {
+      "exclude": [
+        "require-await"
+      ]
+    }
   }
 }

@@ -2,6 +2,8 @@ import {setXpMultiplier, setXpRange} from '/data/multipliers.ts';
 import {MessageContext} from '/business/message-context.ts';
 import {getLevelFromXp, getXpOfUserInGuild} from '/data/xp.ts';
 import {setLevelRoleId} from '/data/roles.ts';
+import {getOwnerId} from '/util/secrets.ts';
+import {logMemory} from '/util/log-memory.ts';
 
 export async function handleCommand(text: string, context: MessageContext): Promise<Response | void> {
   for (const [name, command] of Object.entries(commands)) {
@@ -165,6 +167,30 @@ setRole {level: Integer} {role: Id | Snowflake}
       return {
         message: `You are at level ${getLevelFromXp(xp)}, with ${xp} XP.`
       }
+    }
+  },
+  async logs(text, {authorId}) {
+    if (authorId !== getOwnerId()) {
+      return {sucess: false, message: 'You do not have permission to view the logs.'};
+    }
+
+    const tokens = text.split(/\s+/, 2) as (string | undefined)[];
+
+    const amount = Number.parseInt(tokens[1] ?? '20', 10);
+
+    if (Number.isNaN(amount) || amount <= 0) {
+      return {
+        success: false, message: `Syntax:
+\`\`\`
+logs [amount: Integer = 20]
+     ~~~~~~~~~~~~~~~~~~~~~~
+\`\`\`
+`
+      };
+    }
+
+    return {
+      message: '```\n' + logMemory.get(amount).join('\n') + '\n```'
     }
   }
 };
