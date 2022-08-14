@@ -1,4 +1,5 @@
 # 1up
+A Discord levelling bot.
 
 ## Setup
 ### Requirements
