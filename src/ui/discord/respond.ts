@@ -2,7 +2,7 @@ import {Bot, sendMessage, addReaction} from '/deps/discordeno.ts';
 import {MessageContext} from '/business/message-context.ts';
 import {Response} from '/business/commands.ts';
 import {trySequentially} from '/util/try-sequentially.ts';
-import {mentionUser} from '/ui/discord/mention-user.ts';
+import {mentionUser} from '/business/mention.ts';
 
 export async function respond(bot: Bot, response: Response, context: MessageContext) {
   const indicator = response.success === undefined ? '' : response.success ? '✅' : '❌';
