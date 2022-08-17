@@ -1,6 +1,6 @@
 import {Bot, sendMessage, addReaction} from '/deps/discordeno.ts';
 import {MessageContext} from '/business/message-context.ts';
-import {Response} from '/business/handle-command.ts';
+import {Response} from '/business/commands.ts';
 import {trySequentially} from '/util/try-sequentially.ts';
 import {mentionUser} from '/ui/discord/mention-user.ts';
 
