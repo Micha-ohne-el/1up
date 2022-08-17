@@ -33,3 +33,28 @@ class _SetRange extends Command {
     return {success: true};
   }
 }
+
+@command('range')
+class _GetRange extends Command {
+  @optional()
+  @param(Guild, 'this')
+  guildId!: bigint | 'this' | undefined;
+
+  override async invoke({guildId}: MessageContext) {
+    const guild = this.guildId === 'this' || this.guildId === undefined ? guildId : this.guildId;
+
+    if (guild === undefined) {
+      throw new ParamError(
+        this.$params.get('guildId')!,
+        this.guildId,
+        'Please provide a Guild ID, when using this command in DMs.'
+      );
+    }
+
+    const [first, last] = await getGuildXpRange(guild);
+
+    return {
+      message: `XP will be randomly chosen between ${first} and ${last}.`
+    };
+  }
+}
