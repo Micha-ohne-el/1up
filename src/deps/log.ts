@@ -1,9 +1,11 @@
 export * from 'https://deno.land/std@0.152.0/log/mod.ts';
 import {FormatterFunction, LevelName, HandlerOptions} from 'https://deno.land/std@0.152.0/log/mod.ts';
 import {BaseHandler} from 'https://deno.land/std@0.152.0/log/handlers.ts';
+import {Thyme} from 'https://deno.land/x/thyme@0.1.1/mod.ts';
 
 export const formatLogMessage: FormatterFunction = ({datetime, levelName, loggerName, msg}) => {
-  return `(${datetime.toUTCString()}) [${loggerName}] {${levelName}} ${msg}`;
+  const time = new Thyme(datetime);
+  return `${time.formatSimple('YYYYMMDD-hh:mm:ss.iii')} – ${loggerName}/${levelName}: ${msg}`;
 }
 
 /**
