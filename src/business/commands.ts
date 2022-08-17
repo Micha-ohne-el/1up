@@ -21,6 +21,10 @@ export abstract class Command<T = any> {
       this[name] = await param.match(params.shift(), context);
     }
 
+    if (params.length !== 0) {
+      throw new ExtraParamError(params.join(' '));
+    }
+
     return await this.invoke(context);
   }
 
@@ -201,19 +205,19 @@ export class Param<T> {
       if (this.isOptional) {
         return undefined;
       } else {
-        throw new ParamError(this, text, 'This parameter is required, but you did not pass a value for it.');
+        throw new BadParamError(this, text, 'This parameter is required, but you did not pass a value for it.');
       }
     }
 
     const result = this.matchTypes(text);
 
     if (result === undefined) {
-      throw new ParamError(this, text, 'Value has the wrong type for this parameter.')
+      throw new BadParamError(this, text, 'Value has the wrong type for this parameter.')
     }
 
     // TODO: Needs a way to write specific error messages, like “value must be greater than 0” or similar.
     if (!await this.validator(result, context)) {
-      throw new ParamError(this, text, 'Value cannot be used for this parameter.');
+      throw new BadParamError(this, text, 'Value cannot be used for this parameter.');
     }
 
     return result;
@@ -252,9 +256,23 @@ export interface Response {
   message?: string;
 }
 
-export class ParamError<T = unknown> extends Error {
+export abstract class ParamError<T = unknown> extends Error {
+  abstract param?: Param<T>;
+  abstract value?: unknown;
+}
+
+export class BadParamError<T = unknown> extends ParamError<T> {
   constructor(public param: Param<T>, public value?: unknown, message: string = 'Bad value passed for Param.') {
     const specifics = value === undefined ? param.name : value;
     super(`${message} Specifically: ${inlineCode`${specifics}`}`);
+  }
+}
+
+export class ExtraParamError extends ParamError {
+  override param = undefined;
+
+  constructor(public value: unknown, message: string = 'Extra value passed, when none was expected.') {
+    const errorMessage = value === undefined ? message : `${message} Specifically: ${inlineCode`${value}`}`;
+    super(errorMessage);
   }
 }

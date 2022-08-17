@@ -1,5 +1,5 @@
 import {MessageContext} from '../message-context.ts';
-import {command, Command, param, optional, User, Guild, ParamError} from '/business/commands.ts';
+import {command, Command, param, optional, User, Guild, BadParamError} from '/business/commands.ts';
 import {getLevelFromXp, getXpOfUserInGuild} from '/data/xp.ts';
 
 @command('level')
@@ -16,7 +16,7 @@ class _Level extends Command {
     const guild = this.guildId === 'this' || this.guildId === undefined ? guildId : this.guildId;
 
     if (guild === undefined) {
-      throw new ParamError(
+      throw new BadParamError(
         this.$params.get('guildId')!,
         this.guildId,
         'Please provide a Guild ID instead of using `this`, when using this command in DMs.'

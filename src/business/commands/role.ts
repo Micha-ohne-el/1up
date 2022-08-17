@@ -1,4 +1,4 @@
-import {command, Command, param, optional, require, Int, Role, Guild, ParamError} from '/business/commands.ts';
+import {command, Command, param, optional, require, Int, Role, Guild, BadParamError} from '/business/commands.ts';
 import {MessageContext} from '/business/message-context.ts';
 import {setLevelRoleId} from '/data/roles.ts';
 
@@ -20,7 +20,7 @@ class _Role extends Command {
     const guild = this.guildId === 'this' || this.guildId === undefined ? guildId : this.guildId;
 
     if (guild === undefined) {
-      throw new ParamError(
+      throw new BadParamError(
         this.$params.get('guildId')!,
         this.guildId,
         'Please provide a Guild ID instead of using `this`, when using this command in DMs.'

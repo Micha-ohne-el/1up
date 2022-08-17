@@ -1,5 +1,5 @@
 import {MessageContext} from '/business/message-context.ts';
-import {command, param, optional, Command, Guild, Int, ParamError} from '/business/commands.ts';
+import {command, param, optional, Command, Guild, Int, BadParamError} from '/business/commands.ts';
 import {getGuildXpRange, setXpRange} from '/data/multipliers.ts';
 
 @command('range')
@@ -17,7 +17,7 @@ class _SetRange extends Command {
     const guild = this.guildId === 'this' ? guildId : this.guildId;
 
     if (guild === undefined) {
-      throw new ParamError(
+      throw new BadParamError(
         this.$params.get('guildId')!,
         this.guildId,
         'Please provide a Guild ID instead of using `this`, when using this command in DMs.'
@@ -44,7 +44,7 @@ class _GetRange extends Command {
     const guild = this.guildId === 'this' || this.guildId === undefined ? guildId : this.guildId;
 
     if (guild === undefined) {
-      throw new ParamError(
+      throw new BadParamError(
         this.$params.get('guildId')!,
         this.guildId,
         'Please provide a Guild ID, when using this command in DMs.'
