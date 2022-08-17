@@ -2,9 +2,9 @@ import {MessageContext} from '/business/message-context.ts';
 import {commands, ParamError, Response, Command} from '/business/commands.ts';
 import * as log from '/deps/log.ts';
 
-import '/business/commands/set-multiplier.ts';
-import '/business/commands/set-range.ts';
-import '/business/commands/set-role.ts';
+import '/business/commands/multiplier.ts';
+import '/business/commands/range.ts';
+import '/business/commands/role.ts';
 import '/business/commands/level.ts';
 import '/business/commands/logs.ts';
 import '/business/commands/status.ts';

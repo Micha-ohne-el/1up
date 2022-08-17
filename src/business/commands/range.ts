@@ -1,8 +1,8 @@
 import {MessageContext} from '/business/message-context.ts';
-import {command, param, Command, Guild, Int, ParamError} from '/business/commands.ts';
-import {setXpRange} from '../../data/multipliers.ts';
+import {command, param, optional, Command, Guild, Int, ParamError} from '/business/commands.ts';
+import {getGuildXpRange, setXpRange} from '/data/multipliers.ts';
 
-@command('setRange')
+@command('range')
 class _SetRange extends Command {
   @param(Guild, 'this')
   guildId!: bigint | 'this';

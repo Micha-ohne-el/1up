@@ -2,8 +2,8 @@ import {command, Command, param, optional, require, Int, Role, Guild, ParamError
 import {MessageContext} from '/business/message-context.ts';
 import {setLevelRoleId} from '/data/roles.ts';
 
-@command('setRole')
-class _SetRole extends Command {
+@command('role')
+class _Role extends Command {
   @param(Int)
   @require((level: number) => level > 0)
   level!: number;
