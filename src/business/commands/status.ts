@@ -1,5 +1,5 @@
-import {getOwnerId} from '../../util/secrets.ts';
-import {MessageContext} from '../message-context.ts';
+import {getOwnerId} from '/util/secrets.ts';
+import {MessageContext} from '/business/message-context.ts';
 import {command, Command} from '/business/commands.ts';
 import {logMemory} from '/util/log-memory.ts';
 
