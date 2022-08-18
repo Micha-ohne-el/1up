@@ -15,11 +15,7 @@ export async function getGuildXpRange(id: bigint): Promise<[number, number]> {
   return [rows[0]['first'], rows[0]['last']];
 }
 
-export async function getChannelXpMultiplier(id: bigint): Promise<number> {
-  return await getMultiplier(id);
-}
-
-export async function getRoleXpMultiplier(id: bigint): Promise<number> {
+export async function getXpMultiplier(id: bigint): Promise<number> {
   return await getMultiplier(id);
 }
 

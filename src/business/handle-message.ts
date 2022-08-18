@@ -1,6 +1,6 @@
 import {getRandomNumber} from '/util/random.ts';
 import {awardXpAndMessagesToUserInGuild, getLevelFromXp, getXpOfUserInGuild} from '/data/xp.ts';
-import {getGuildXpRange, getChannelXpMultiplier, getRoleXpMultiplier} from '/data/multipliers.ts';
+import {getGuildXpRange, getXpMultiplier} from '/data/multipliers.ts';
 import {MessageContext} from '/business/message-context.ts';
 
 export async function handleMessage({authorId, guildId, channelIds, roleIds}: MessageContext) {
@@ -14,8 +14,8 @@ export async function handleMessage({authorId, guildId, channelIds, roleIds}: Me
   const range = await getGuildXpRange(guildId);
   const rawXp = getRandomNumber(...range);
 
-  const channelMultipliersPromise = Promise.all(channelIds.map(getChannelXpMultiplier));
-  const roleMultipliersPromise = Promise.all(roleIds.map(getRoleXpMultiplier));
+  const channelMultipliersPromise = Promise.all(channelIds.map(getXpMultiplier));
+  const roleMultipliersPromise = Promise.all(roleIds.map(getXpMultiplier));
 
   const [channelMultipliers, roleMultipliers] = await Promise.all([
     channelMultipliersPromise, roleMultipliersPromise

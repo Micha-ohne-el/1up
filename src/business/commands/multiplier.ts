@@ -1,9 +1,9 @@
 import {command, param, Command, Channel, Float, Role} from '/business/commands.ts';
 import {MessageContext} from '/business/message-context.ts';
-import {setXpMultiplier} from '/data/multipliers.ts';
+import {getXpMultiplier, setXpMultiplier} from '/data/multipliers.ts';
 
 @command('multiplier')
-class _Multiplier extends Command {
+class _GetMultiplier extends Command {
   @param(Channel, Role)
   id!: bigint;
 
@@ -19,6 +19,18 @@ class _Multiplier extends Command {
 
     return {
       success: true
+    };
+  }
+}
+
+@command('multiplier')
+class _SetMultiplier extends Command {
+  @param(Channel, Role)
+  id!: bigint;
+
+  override async invoke() {
+    return {
+      message: `×${await getXpMultiplier(this.id)}`
     };
   }
 }
