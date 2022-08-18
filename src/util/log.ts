@@ -95,7 +95,7 @@ export const logMemory = {
 log.setup({
   handlers: {
     console: new log.handlers.ConsoleHandler('DEBUG', {formatter: formatLogMessage}),
-    file: new log.handlers.FileHandler('WARNING', {filename: 'logs', formatter: formatLogMessage}),
+    file: new log.handlers.FileHandler('INFO', {filename: 'logs', formatter: formatLogMessage}),
     memory: memoryHandler
   },
   loggers: {
