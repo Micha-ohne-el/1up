@@ -34,10 +34,6 @@ class _Update extends Command {
       return {success: false};
     }
 
-    await Deno.run({
-      cmd: ['deno', 'task', 'run']
-    });
-
     Deno.exit();
   }
 }
