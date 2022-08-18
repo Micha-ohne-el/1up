@@ -1,6 +1,6 @@
 import {MessageContext} from '/business/message-context.ts';
 import {commands, ParamError, Response, Command} from '/business/commands.ts';
-import * as log from '/deps/log.ts';
+import {error} from '/util/log.ts';
 
 import '/business/commands/multiplier.ts';
 import '/business/commands/range.ts';
@@ -18,13 +18,13 @@ export async function handleCommand(text: string, context: MessageContext): Prom
   for (const [command, text] of possibleCommands) {
     try {
       return await command.call(text, context);
-    } catch (error: unknown) {
-      if (!(error instanceof ParamError)) {
-        log.error('An error occurred while trying to call a command.', command, error);
+    } catch (err: unknown) {
+      if (!(err instanceof ParamError)) {
+        error('An error occurred while trying to call a command.', command, err);
         continue;
       }
 
-      errors.push({command, error});
+      errors.push({command, error: err});
     }
   }
 

@@ -1,4 +1,4 @@
-import {MessageContext} from '../message-context.ts';
+import {MessageContext} from '/business/message-context.ts';
 import {command, Command, param, optional, User, Guild, BadParamError} from '/business/commands.ts';
 import {getLevelFromXp, getXpOfUserInGuild} from '/data/xp.ts';
 

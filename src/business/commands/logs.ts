@@ -1,7 +1,7 @@
-import {getOwnerId} from '../../util/secrets.ts';
-import {MessageContext} from '../message-context.ts';
+import {getOwnerId} from '/util/secrets.ts';
+import {MessageContext} from '/business/message-context.ts';
 import {command, Command, param, optional, require, Int} from '/business/commands.ts';
-import {logMemory} from '/util/log-memory.ts';
+import {logMemory} from '/util/log.ts';
 
 @command('logs')
 class _Logs extends Command {

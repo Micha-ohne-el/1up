@@ -1,7 +1,7 @@
 import {MessageContext} from '/business/message-context.ts';
 import {command, Command, Response} from '/business/commands.ts';
 import {getOwnerId} from '/util/secrets.ts';
-import {error} from '/deps/log.ts';
+import {error} from '/util/log.ts';
 
 @command('update')
 class _Update extends Command {

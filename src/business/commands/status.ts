@@ -1,7 +1,8 @@
 import {getOwnerId} from '/util/secrets.ts';
 import {MessageContext} from '/business/message-context.ts';
+import {codeBlock} from '/business/wrap.ts';
 import {command, Command} from '/business/commands.ts';
-import {logMemory} from '/util/log-memory.ts';
+import {logMemory} from '/util/log.ts';
 
 @command('status')
 class _Status extends Command {
@@ -15,13 +16,10 @@ class _Status extends Command {
     const memoryStatus = `${Math.floor(memoryInfo.available / 1024)} MB / ${Math.floor(memoryInfo.total / 1024)} MB available`;
 
     return {
-      message: `**CPU Load averages (past 5/10/15 minutes):** ${loadAverages}
-**Memory status:** ${memoryStatus}
-**Recent logs:**
-\`\`\`
-${logMemory.get(20).join('\n')}
-\`\`\`
-`
+      message: `**CPU Load averages (past 5/10/15 minutes):** ${loadAverages}\n`
+        + `**Memory status:** ${memoryStatus}\n`
+        + '**Recent logs:**\n'
+        + codeBlock`${logMemory.get(20).join('\n')}`
     }
   }
 }

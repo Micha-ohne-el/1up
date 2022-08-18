@@ -1,4 +1,4 @@
-import {warning} from '/deps/log.ts';
+import {warning} from '/util/log.ts';
 
 export async function trySequentially(...functions: (() => Promise<unknown>)[]) {
   for (const func of functions) {
