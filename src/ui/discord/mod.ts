@@ -6,7 +6,7 @@ import {formatUser} from '/ui/discord/format-user.ts';
 import {respond} from '/ui/discord/respond.ts';
 import {handleCommand} from '/business/handle-command.ts';
 import {getLevelRoleId} from '/data/roles.ts';
-import {info, error} from '/deps/log.ts';
+import {info, error, debug} from '/deps/log.ts';
 
 export async function connect() {
   await startBot(bot);
@@ -27,6 +27,7 @@ const bot = createBot(
       },
       async messageCreate(bot, message) {
         if (message.isBot || message.authorId === bot.id) {
+          debug('Message ignored because its author is a bot.', message);
           return;
         }
 

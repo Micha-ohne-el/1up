@@ -7,12 +7,13 @@ import {connect} from '/ui/discord/mod.ts';
 setup({
   handlers: {
     console: new handlers.ConsoleHandler('DEBUG', {formatter: formatLogMessage}),
+    file: new handlers.FileHandler('WARNING', {filename: 'logs', formatter: formatLogMessage}),
     memory: memoryHandler
   },
   loggers: {
     default: {
       level: 'DEBUG',
-      handlers: ['console', 'memory']
+      handlers: ['console', 'file', 'memory']
     }
   }
 })
