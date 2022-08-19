@@ -18,7 +18,7 @@ class _Logs extends Command {
     const amount = this.amount ?? 20;
 
     return {
-      message: '```\n' + logMemory.get(amount).join('\n').slice(0, 1992) + '\n```'
+      message: '```\n' + logMemory.get(amount).join('\n') + '\n```'
     }
   }
 }
