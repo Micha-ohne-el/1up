@@ -10,7 +10,7 @@ export async function respond(bot: Bot, response: Response, context: MessageCont
   if (response.message !== undefined) {
     await trySequentially(
       async () => await sendMessage(bot, context.channelIds[0], {
-        content: [indicator, response.message].join(' '),
+        content: [indicator, response.message].join(' ').trim(),
         messageReference: {
           messageId: context.messageId,
           guildId: context.guildId,
@@ -19,7 +19,7 @@ export async function respond(bot: Bot, response: Response, context: MessageCont
         }
       }),
       async () => await sendMessage(bot, context.channelIds[0], {
-        content: [indicator, mentionUser(context.authorId), response.message].join(' ')
+        content: [indicator, mentionUser(context.authorId), response.message].join(' ').trim()
       }),
       async () => await addReaction(bot, context.channelIds[0], context.messageId, indicator)
     );
