@@ -15,7 +15,7 @@ export abstract class Command<T = any> {
   abstract invoke(context: MessageContext): Promise<Response> | Response;
 
   async call(text: string, context: MessageContext) {
-    const params = text.split(' ').slice(1);
+    const params = this.parseToParams(text);
 
     for (const [name, param] of this.$params) {
       this[name] = await param.match(params.shift(), context);
@@ -29,6 +29,47 @@ export abstract class Command<T = any> {
   }
 
   [key: string]: unknown;
+
+  private parseToParams(text: string) {
+    const params: string[] = [];
+
+    let escaped = false;
+    let quote: '"' | "'" | '' = '';
+
+    let token = '';
+    for (const char of text) {
+      if (escaped) {
+        escaped = false;
+        token += char;
+      }
+
+      else if (char === '\\') {
+        escaped = true;
+      }
+
+      else if (char === quote) {
+        quote = '';
+        params.push(token);
+        token = '';
+      }
+
+      else if (char === '"' || char === "'") {
+        quote = char;
+      }
+
+      else if (!quote && /\s+/.test(char)) {
+        params.push(token);
+        token = '';
+      }
+
+      else {
+        token += char;
+      }
+    }
+    params.push(token);
+
+    return params.slice(1);
+  }
 }
 
 abstract class ParamType<T = unknown> {
