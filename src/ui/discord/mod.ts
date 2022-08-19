@@ -5,7 +5,7 @@ import {handleMessage, Update, shouldUpdate} from '/business/handle-message.ts';
 import {formatUser} from '/ui/discord/format-user.ts';
 import {respond} from '/ui/discord/respond.ts';
 import {handleCommand} from '/business/handle-command.ts';
-import {getLevelRoleId} from '/data/roles.ts';
+import {getLevelRoleId, getLevelRoleIds} from '/data/roles.ts';
 import {info, error, debug} from '/util/log.ts';
 
 export async function connect() {
@@ -70,21 +70,29 @@ async function handleUpdate({oldLevel, newLevel}: Update, context: MessageContex
 
   const oldRoleId = await getLevelRoleId(context.guildId!, oldLevel);
   const newRoleId = await getLevelRoleId(context.guildId!, newLevel);
+  const levelRoleIds = (await getLevelRoleIds(context.guildId!)).map(entry => entry.roleId);
 
-  if (oldRoleId == newRoleId) {
-    info('Nothing to do.');
-    return;
+  if (!(context.roleIds as (bigint | undefined)[]).includes(oldRoleId)) {
+    info(`Level roles for user ${context.authorId} have desynced.`);
   }
 
-  if (oldRoleId) {
+  const excessRoles = levelRoleIds.filter(id => id !== newRoleId && context.roleIds.includes(id))
+
+  info('Attempting to remove the following roles:', excessRoles);
+
+  for (const roleId of excessRoles) {
     try {
-      await removeRole(bot, context.guildId!, context.authorId, oldRoleId, 'Level up!');
-      info(`Removed role ${oldRoleId} from ${context.authorId}.`);
+      await removeRole(bot, context.guildId!, context.authorId, roleId, 'Level up!');
+      info(`Removed role ${roleId} from ${context.authorId}.`);
     } catch (e: unknown) {
       error(e);
     }
   }
   if (newRoleId) {
+    if (context.roleIds.includes(newRoleId)) {
+      info(`User already has newRoleId:`, newRoleId);
+    }
+
     try {
       await addRole(bot, context.guildId!, context.authorId, newRoleId, 'Level up!');
       info(`Added role ${newRoleId} to ${context.authorId}.`);
