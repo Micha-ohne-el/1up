@@ -68,26 +68,33 @@ async function handleCommandMessage(text: string, context: MessageContext) {
 async function handleUpdate({oldLevel, newLevel}: Update, context: MessageContext) {
   info(`Updating roles for user ${context.authorId} in guild ${context.guildId} (${oldLevel} => ${newLevel})...`);
 
-  const oldRoleId = await getLevelRoleId(context.guildId!, oldLevel);
-  const newRoleId = await getLevelRoleId(context.guildId!, newLevel);
-  const levelRoleIds = (await getLevelRoleIds(context.guildId!)).map(entry => entry.roleId);
+  const oldRoleIdPromise = getLevelRoleId(context.guildId!, oldLevel);
+  const newRoleIdPromise = getLevelRoleId(context.guildId!, newLevel);
+  const levelRoleIdsPromise = getLevelRoleIds(context.guildId!);
+
+  const [oldRoleId, newRoleId, levelRoleIds] = await Promise.all([oldRoleIdPromise, newRoleIdPromise, levelRoleIdsPromise]);
 
   if (!(context.roleIds as (bigint | undefined)[]).includes(oldRoleId)) {
     info(`Level roles for user ${context.authorId} have desynced.`);
   }
 
-  const excessRoles = levelRoleIds.filter(id => id !== newRoleId && context.roleIds.includes(id))
+  const excessRoles = levelRoleIds.filter(({roleId}) => roleId !== newRoleId && context.roleIds.includes(roleId))
 
   info('Attempting to remove the following roles:', excessRoles);
 
-  for (const roleId of excessRoles) {
-    try {
-      await removeRole(bot, context.guildId!, context.authorId, roleId, 'Level up!');
-      info(`Removed role ${roleId} from ${context.authorId}.`);
-    } catch (e: unknown) {
-      error(e);
-    }
-  }
+  await Promise.all(
+    excessRoles.map(
+      async ({roleId}) => {
+        try {
+          await removeRole(bot, context.guildId!, context.authorId, roleId, 'Level up!');
+          info(`Removed role ${roleId} from ${context.authorId}.`);
+        } catch (e: unknown) {
+          error(e);
+        }
+      }
+    )
+  );
+
   if (newRoleId) {
     if (context.roleIds.includes(newRoleId)) {
       info(`User already has newRoleId:`, newRoleId);
