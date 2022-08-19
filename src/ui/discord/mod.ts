@@ -45,7 +45,8 @@ const bot = createBot(
         } catch (e: unknown) {
           error(e);
         }
-      }
+      },
+      debug: (...args) => debug('debug', ...args)
     }
   }
 );
