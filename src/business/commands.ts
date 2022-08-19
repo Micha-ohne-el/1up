@@ -51,6 +51,22 @@ export class Int extends ParamType<number> {
   }
 }
 
+export class Text extends ParamType<string> {
+  override match(text: string) {
+    return text || undefined;
+  }
+}
+
+export class RegularExpression extends ParamType<RegExp> {
+  override match(text: string) {
+    try {
+      return new RegExp(text, 'm');
+    } catch {
+      return undefined;
+    }
+  }
+}
+
 export class Guild extends ParamType<bigint> {
   override match(text: string) {
     try {

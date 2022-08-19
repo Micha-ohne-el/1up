@@ -73,7 +73,7 @@ interface LogRetriever {
 export const memoryHandler = new MemoryHandler('DEBUG', {limit: 1000, formatter: formatLogMessage});
 
 export const logMemory = {
-  get(amount: number) {
+  get(amount: number, pattern?: RegExp) {
     const memory = memoryHandler.retriever;
 
     const entries: string[] = [];
@@ -83,6 +83,10 @@ export const logMemory = {
 
       if (entry === undefined) {
         break;
+      }
+
+      if (pattern && !pattern.test(entry)) {
+        continue;
       }
 
       entries.unshift(entry);

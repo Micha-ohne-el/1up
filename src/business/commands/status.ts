@@ -19,7 +19,7 @@ class _Status extends Command {
       message: `**CPU Load averages (past 5/10/15 minutes):** ${loadAverages}\n`
         + `**Memory status:** ${memoryStatus}\n`
         + '**Recent logs:**\n'
-        + codeBlock`${logMemory.get(20).join('\n')}`
+        + codeBlock`${logMemory.get(20, /CRITICAL|ERROR|WARNING/).join('\n')}`
     }
   }
 }
