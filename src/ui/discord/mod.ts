@@ -97,7 +97,8 @@ async function handleUpdate({oldLevel, newLevel}: Update, context: MessageContex
 
   if (newRoleId) {
     if (context.roleIds.includes(newRoleId)) {
-      info(`User already has newRoleId:`, newRoleId);
+      info(`User already has newRoleId (${newRoleId}), skipping.`);
+      return;
     }
 
     try {
