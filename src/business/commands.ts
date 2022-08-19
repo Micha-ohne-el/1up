@@ -1,11 +1,13 @@
 import {inlineCode} from './wrap.ts';
 import {MessageContext} from '/business/message-context.ts';
+import {getOwnerId} from '/util/secrets.ts';
 
 export const commands = new Set<Command>();
 
 export abstract class Command<T = any> {
   $name!: string;
   $params!: Map<string, Param<T>>;
+  $privilegeLevel!: PrivilegeLevel;
 
   init() {
     this.$name = this.$name ?? this.constructor.name;
@@ -23,6 +25,10 @@ export abstract class Command<T = any> {
 
     if (params.length !== 0) {
       throw new ExtraParamError(params.join(' '));
+    }
+
+    if (!this.$privilegeLevel.check(context)) {
+      throw new PermissionError(this.$privilegeLevel);
     }
 
     return await this.invoke(context);
@@ -208,6 +214,16 @@ export function command(name?: string) {
   };
 }
 
+export function availableTo(privilegeLevel: new () => PrivilegeLevel) {
+  return (target: new () => Command) => {
+    const prototype = target.prototype as Command;
+
+    prototype.init();
+
+    prototype.$privilegeLevel = new privilegeLevel;
+  };
+}
+
 export function param(...types: ((new () => ParamType) | string)[]) {
   return (target: Command, key: string) => {
     target.init();
@@ -247,7 +263,6 @@ export function require<T>(validator: (value: T, context: MessageContext) => boo
 export class Param<T> {
   name: string;
   types: ParamType<T>[] = [];
-  privilegeLevel: PrivilegeLevel = PrivilegeLevel.Everyone;
   isOptional = false;
   validator(_value: T, _context: MessageContext): boolean | Promise<boolean> {
     return true;
@@ -301,11 +316,32 @@ export class Param<T> {
   }
 }
 
-export enum PrivilegeLevel {
-  Everyone,
-  Moderator,
-  ServerOwner,
-  BotOwner
+export interface PrivilegeLevel {
+  check(context: MessageContext): boolean;
+}
+
+export class Everyone implements PrivilegeLevel {
+  check() {
+    return true;
+  }
+}
+
+export class Moderator implements PrivilegeLevel {
+  check() {
+    return false; // TODO: Implement.
+  }
+}
+
+export class ServerOwner implements PrivilegeLevel {
+  check() {
+    return false; // TODO: Implement.
+  }
+}
+
+export class BotOwner implements PrivilegeLevel {
+  check(context: MessageContext) {
+    return context.authorId === getOwnerId();
+  }
 }
 
 export interface Response {
@@ -331,5 +367,15 @@ export class ExtraParamError extends ParamError {
   constructor(public value: unknown, message: string = 'Extra value passed, when none was expected.') {
     const errorMessage = value === undefined ? message : `${message} Specifically: ${inlineCode`${value}`}`;
     super(errorMessage);
+  }
+}
+
+export class PermissionError extends Error {
+  constructor(privilegeLevel?: PrivilegeLevel) {
+    const message = privilegeLevel ?
+      `You need to be of privilege level ${privilegeLevel.constructor.name} to run this command.` :
+      'You are not allowed to run this command.';
+
+    super(message);
   }
 }

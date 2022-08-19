@@ -1,15 +1,10 @@
-import {MessageContext} from '/business/message-context.ts';
-import {command, Command, Response} from '/business/commands.ts';
-import {getOwnerId} from '/util/secrets.ts';
+import {command, Command, Response, availableTo, BotOwner} from '/business/commands.ts';
 import {error} from '/util/log.ts';
 
 @command('update')
+@availableTo(BotOwner)
 class _Update extends Command {
-  override async invoke({authorId}: MessageContext): Promise<Response> {
-    if (authorId !== getOwnerId()) {
-      return {success: false};
-    }
-
+  override async invoke(): Promise<Response> {
     const fetchErrors = await Deno.run({
       cmd: ['git', 'fetch', '--all'],
       stderr: 'piped',
