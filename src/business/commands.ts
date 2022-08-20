@@ -1,4 +1,4 @@
-import {inlineCode} from './wrap.ts';
+import {codeBlock, inlineCode} from './wrap.ts';
 import {MessageContext} from '/business/message-context.ts';
 import {getOwnerId} from '/util/secrets.ts';
 
@@ -33,6 +33,19 @@ export abstract class Command<T = any> {
     }
 
     return await this.invoke(context);
+  }
+
+  toString() {
+    const parts = [this.$name, ...this.$params.values()];
+
+    return codeBlock(parts.join(' '));
+  }
+
+  toErrorMessage(param: Param<unknown>) {
+    const parts = [this.$name, ...this.$params.values()];
+    const underlines = parts.map(part => (part === param ? '~' : ' ').repeat(part.toString().length));
+
+    return codeBlock(parts.join(' ') + '\n' + underlines.join(' '));
   }
 
   [key: string]: unknown;

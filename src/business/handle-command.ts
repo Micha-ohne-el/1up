@@ -1,5 +1,5 @@
 import {MessageContext} from '/business/message-context.ts';
-import {commands, ParamError, Response, Command, PermissionError} from '/business/commands.ts';
+import {commands, ParamError, BadParamError, Response, Command, PermissionError} from '/business/commands.ts';
 import {warning} from '/util/log.ts';
 
 import '/business/commands/multiplier.ts';
@@ -56,12 +56,11 @@ function getPossibleCommands(commands: Set<Command>, text: string): Map<Command,
 function constructErrorMessage(error: PermissionError, command: Command): string | undefined;
 function constructErrorMessage(error: ParamError, command: Command): string | undefined;
 function constructErrorMessage(error: Error, command: Command): string | undefined {
-  if (error instanceof ParamError) {
-    const parts = [command.$name, ...command.$params.values()];
-    const underlines = parts.map(part => (part === error.param ? '~' : ' ').repeat(part.toString().length));
-
-    return error.message + '\n```\n' + parts.join(' ') + '\n' + underlines.join(' ') + '\n```';
+  if (error instanceof BadParamError) {
+    return error.message + '\n' + command.toErrorMessage(error.param);
+  } else if (error instanceof ParamError) {
+    return error.message + '\n' + command.toString();
   } else if (error instanceof PermissionError) {
-    return error.message + ' Specifically: `' + command.$name + '`';
+    return error.message;
   }
 }
