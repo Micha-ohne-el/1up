@@ -358,7 +358,7 @@ export abstract class ParamError<T = unknown> extends Error {
 export class BadParamError<T = unknown> extends ParamError<T> {
   constructor(public param: Param<T>, public value?: unknown, message: string = 'Bad value passed for Param.') {
     const specifics = value === undefined ? param.name : value;
-    super(`${message} Specifically: ${inlineCode`${specifics}`}`);
+    super(`${message} Specifically: ${inlineCode(String(specifics))}`);
   }
 }
 
@@ -366,7 +366,7 @@ export class ExtraParamError extends ParamError {
   override param = undefined;
 
   constructor(public value: unknown, message: string = 'Extra value passed, when none was expected.') {
-    const errorMessage = value === undefined ? message : `${message} Specifically: ${inlineCode`${value}`}`;
+    const errorMessage = value === undefined ? message : `${message} Specifically: ${inlineCode(String(value))}`;
     super(errorMessage);
   }
 }

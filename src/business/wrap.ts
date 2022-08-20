@@ -1,13 +1,9 @@
-export function inlineCode(parts: TemplateStringsArray, ...params: unknown[]) {
-  const content = escapeForInlineCode(String.raw(parts, ...params));
-
-  return '`' + content + '`';
+export function inlineCode(content: string) {
+  return '`' + escapeForInlineCode(content) + '`';
 }
 
-export function codeBlock(parts: TemplateStringsArray, ...params: unknown[]) {
-  const content = escapeForCodeBlock(String.raw(parts, ...params));
-
-  return '```\n' + content + '\n```';
+export function codeBlock(content: string) {
+  return '```\n' + escapeForCodeBlock(content) + '\n```';
 }
 
 function escapeForInlineCode(text: string): string {
