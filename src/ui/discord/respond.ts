@@ -18,6 +18,10 @@ export async function respond(bot: Bot, response: Response, context: MessageCont
             guildId: context.guildId,
             channelId: context.channelIds[0],
             failIfNotExists: true
+          },
+          allowedMentions: {
+            repliedUser: true,
+            users: [context.authorId]
           }
         }
 
