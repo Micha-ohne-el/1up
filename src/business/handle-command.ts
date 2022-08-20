@@ -8,7 +8,6 @@ import '/business/commands/role.ts';
 import '/business/commands/level.ts';
 import '/business/commands/logs.ts';
 import '/business/commands/status.ts';
-import '/business/commands/update.ts';
 import '/business/commands/leaderboard.ts';
 
 export async function handleCommand(text: string, context: MessageContext): Promise<Response | void> {
