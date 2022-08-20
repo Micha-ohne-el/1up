@@ -206,7 +206,7 @@ class Literal extends ParamType<string> {
   }
 
   override match(text: string) {
-    if (text === this.text || text === `'${this.text}'` || text === `"${this.text}"`) {
+    if (text === this.text) {
       return this.text;
     }
   }
