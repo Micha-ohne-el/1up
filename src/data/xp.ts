@@ -1,4 +1,4 @@
-import {getXp, getGlobalXp, awardXp, awardXpAndMessages} from './db.ts';
+import {getXp, getGlobalXp, awardXp, awardXpAndMessages, getLeaderboard} from './db.ts';
 
 export async function getXpOfUserInGuild(guildId: bigint, userId: bigint) {
   return (await getXp(userId, guildId))?.[0]?.['xp'] ?? 0;
@@ -34,4 +34,19 @@ export function getLevelFromXp(xp: number) {
   }
 
   return level;
+}
+
+export async function getLeaderboardOfGuild(guildId: bigint, amount: number) {
+  const rows = await getLeaderboard(guildId, amount);
+
+  return rows.map(
+    row => (
+      {
+        userId: BigInt(row['userid']),
+        xp: row['xp'] as number,
+        level: getLevelFromXp(row['xp']),
+        messages: row['messages'] as number
+      }
+    )
+  );
 }

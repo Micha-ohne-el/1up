@@ -88,6 +88,16 @@ export async function setRoleForLevel(guildId: bigint, level: number, roleId: bi
   `;
 }
 
+export async function getLeaderboard(guildId: bigint, amount: number) {
+  return await sql`
+    SELECT userId, xp, messages
+    FROM stats
+    WHERE guildId = ${guildId.toString()}
+    ORDER BY xp
+    LIMIT ${amount}
+  `;
+}
+
 export const sql = postgres(
   {
     host: 'localhost',
