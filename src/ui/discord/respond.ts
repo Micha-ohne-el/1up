@@ -10,7 +10,7 @@ export async function respond(bot: Bot, response: Response, context: MessageCont
   if (response.message !== undefined) {
     await trySequentially(
       async () => {
-        const content = [indicator, response.message].join(' ').trim();
+        const content = `${indicator} ${response.message}`.trim();
 
         const message: CreateMessage = {
           messageReference: {
@@ -34,7 +34,7 @@ export async function respond(bot: Bot, response: Response, context: MessageCont
         await sendMessage(bot, context.channelIds[0], message);
       },
       async () => {
-        const content = [indicator, mentionUser(context.authorId), response.message].join(' ').trim();
+        const content = `${indicator} ${mentionUser(context.authorId)}\n${response.message}`.trim();
 
         if (content.length > 2000) {
           await sendMessage(bot, context.channelIds[0], {file: {name: 'too-long.txt', blob: new Blob([content])}});
