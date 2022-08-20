@@ -12,6 +12,7 @@ export abstract class Command<T = any> {
   init() {
     this.$name = this.$name ?? this.constructor.name;
     this.$params = this.$params ?? new Map<string, Param<T>>();
+    this.$privilegeLevel = new Everyone();
   }
 
   abstract invoke(context: MessageContext): Promise<Response> | Response;
