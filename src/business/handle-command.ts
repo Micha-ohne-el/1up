@@ -1,6 +1,6 @@
 import {MessageContext} from '/business/message-context.ts';
 import {commands, ParamError, Response, Command, PermissionError} from '/business/commands.ts';
-import {error} from '/util/log.ts';
+import {warning} from '/util/log.ts';
 
 import '/business/commands/multiplier.ts';
 import '/business/commands/range.ts';
@@ -9,6 +9,7 @@ import '/business/commands/level.ts';
 import '/business/commands/logs.ts';
 import '/business/commands/status.ts';
 import '/business/commands/update.ts';
+import '/business/commands/leaderboard.ts';
 
 export async function handleCommand(text: string, context: MessageContext): Promise<Response | void> {
   const possibleCommands = getPossibleCommands(commands, text);
@@ -19,8 +20,9 @@ export async function handleCommand(text: string, context: MessageContext): Prom
     try {
       return await command.call(text, context);
     } catch (err: unknown) {
+      warning(err);
+
       if (!(err instanceof Error)) {
-        error(err);
         continue;
       }
 
