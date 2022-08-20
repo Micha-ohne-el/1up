@@ -86,7 +86,9 @@ export abstract class Command<T = any> {
         token += char;
       }
     }
-    params.push(token);
+    if (token) {
+      params.push(token);
+    }
 
     return params.slice(1);
   }
