@@ -16,7 +16,7 @@ class _Update extends Command {
     }
 
     const resetErrors = await Deno.run({
-      cmd: ['git', 'reset', '--hard'],
+      cmd: ['git', 'reset', '--hard', 'main'],
       stderr: 'piped',
       clearEnv: true
     }).stderrOutput();
