@@ -1,6 +1,6 @@
 import {MessageContext} from '/business/message-context.ts';
 import {command, Command, param, optional, User, Guild, BadParamError} from '/business/commands.ts';
-import {getLevelFromXp, getXpOfUserInGuild} from '/data/xp.ts';
+import {getLevelFromXp, getXpOfUserGlobally, getXpOfUserInGuild} from '/data/xp.ts';
 
 @command('level')
 class _Level extends Command {
@@ -9,8 +9,8 @@ class _Level extends Command {
   userId!: bigint | 'me' | undefined;
 
   @optional()
-  @param(Guild, 'this')
-  guildId!: bigint | 'this' | undefined;
+  @param(Guild, 'this', 'global')
+  guildId!: bigint | 'this' | 'global' | undefined;
 
   override async invoke({authorId, guildId}: MessageContext) {
     const guild = this.guildId === 'this' || this.guildId === undefined ? guildId : this.guildId;
@@ -24,12 +24,28 @@ class _Level extends Command {
     }
 
     if (this.userId === 'me' || this.userId === undefined) {
+      if (guild === 'global') {
+        const xp = await getXpOfUserGlobally(authorId);
+
+        return {
+          message: `Globally, you have collected ${xp} XP.`
+        };
+      }
+
       const xp = await getXpOfUserInGuild(guild, authorId);
 
       return {
         message: `You are at level ${getLevelFromXp(xp)}, with ${xp} XP.`
       };
     } else {
+      if (guild === 'global') {
+        const xp = await getXpOfUserGlobally(this.userId);
+
+        return {
+          message: `Globally, this user has collected ${xp} XP.`
+        };
+      }
+
       const xp = await getXpOfUserInGuild(guild, this.userId);
 
       return {
