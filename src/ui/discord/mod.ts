@@ -1,4 +1,4 @@
-import {createBot, startBot, Intents, Message, getUser, getChannel, removeRole, addRole, getRoles} from '/deps/discordeno.ts';
+import {createBot, startBot, Intents, Message, getUser, getChannel, removeRole, addRole, getRoles, getGuild} from '/deps/discordeno.ts';
 import {getBotToken, getOwnerId} from '/util/secrets.ts';
 import {MessageContext} from '/business/message-context.ts';
 import {handleMessage, Update, shouldUpdate} from '/business/handle-message.ts';
@@ -116,17 +116,28 @@ async function getContextFromMessage(message: Message): Promise<MessageContext> 
     guildId: message.guildId,
     channelIds: await getChannelHierarchy(message.channelId),
     roleIds: message.member?.roles ?? [],
-    canEdit(_id: bigint) {
-      if (message.authorId === getOwnerId()) {
-        return true;
-      }
+    checks: {
+      async canEdit(_id: bigint) {
+        return message.authorId === getOwnerId();
+      },
+      async isUser(id) {
+        return getUser(bot, id) !== undefined;
+      },
+      async isRole(id, guildId) {
+        if (!guildId && !message.guildId) {
+          return false;
+        }
 
-      return false;
-    },
-    async isRole(id) {
-      const roles = await getRoles(bot, message.guildId ?? 0n);
+        const roles = await getRoles(bot, guildId ?? message.guildId!);
 
-      return roles.has(id);
+        return roles.has(id);
+      },
+      async isChannel(id) {
+        return getChannel(bot, id) !== undefined;
+      },
+      async isGuild(id) {
+        return getGuild(bot, id) !== undefined;
+      },
     }
   };
 }

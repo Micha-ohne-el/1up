@@ -3,15 +3,15 @@ import {MessageContext} from '/business/message-context.ts';
 import {getXpMultiplier, setXpMultiplier} from '/data/multipliers.ts';
 
 @command('multiplier')
-class _GetMultiplier extends Command {
+class _SetMultiplier extends Command {
   @param(Channel, Role)
   id!: bigint;
 
   @param(Float)
   multiplier!: number;
 
-  override async invoke({canEdit}: MessageContext) {
-    if (!canEdit(this.id)) {
+  override async invoke({checks}: MessageContext) {
+    if (!checks.canEdit(this.id)) {
       return {success: false};
     }
 
@@ -24,7 +24,7 @@ class _GetMultiplier extends Command {
 }
 
 @command('multiplier')
-class _SetMultiplier extends Command {
+class _GetMultiplier extends Command {
   @param(Channel, Role)
   id!: bigint;
 

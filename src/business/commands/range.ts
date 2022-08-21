@@ -13,7 +13,7 @@ class _SetRange extends Command {
   @param(Int)
   last!: number;
 
-  override async invoke({canEdit, guildId}: MessageContext) {
+  override async invoke({checks, guildId}: MessageContext) {
     const guild = this.guildId === 'this' ? guildId : this.guildId;
 
     if (guild === undefined) {
@@ -24,7 +24,7 @@ class _SetRange extends Command {
       );
     }
 
-    if (!canEdit(guild)) {
+    if (!checks.canEdit(guild)) {
       return {success: false};
     }
 

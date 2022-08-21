@@ -96,7 +96,7 @@ export abstract class Command<T = any> {
 }
 
 abstract class ParamType<T = unknown> {
-  abstract match(text: string): T | undefined;
+  abstract match(text: string, context: MessageContext): Promise<T | undefined> | T | undefined;
 
   toString() {
     return this.constructor.name;
@@ -140,25 +140,41 @@ export class RegularExpression extends ParamType<RegExp> {
 }
 
 export class Guild extends ParamType<bigint> {
-  override match(text: string) {
-    return bigintOrUndefined(text);
+  override async match(text: string, {checks}: MessageContext) {
+    const id = bigintOrUndefined(text);
+
+    if (id !== undefined && await checks.isGuild(id)) {
+      return id;
+    }
   }
 }
 
 export class User extends ParamType<bigint> {
-  override match(text: string) {
-    return bigintOrUndefined(text)
+  override async match(text: string, {checks}: MessageContext) {
+    const id = bigintOrUndefined(text)
       ?? bigintOrUndefined(text.match(/<@(\d+)>/)?.[1]);
+
+    if (id !== undefined && await checks.isUser(id)) {
+      return id;
+    }
   }
 }
 
 export class Channel extends ParamType<bigint> {
-  override match(text: string) {
-    return bigintOrUndefined(text)
+  override async match(text: string, {checks}: MessageContext) {
+    const id = bigintOrUndefined(text)
       ?? bigintOrUndefined(text.match(/<#(\d+)>/)?.[1]);
+
+    if (id !== undefined && await checks.isChannel(id)) {
+      return id;
+    }
   }
 }
 
+/**
+  Note that roles are not reified and, thus, any ID can be used as a role.
+  You should use MessageContext.checks.isRole to verify whether an actual role was supplied.
+*/
 export class Role extends ParamType<bigint> {
   override match(text: string) {
     return bigintOrUndefined(text)
@@ -263,7 +279,7 @@ export class Param<T> {
       }
     }
 
-    const result = this.matchTypes(text);
+    const result = await this.matchTypes(text, context);
 
     if (result === undefined) {
       throw new BadParamError(this, text, 'Value has the wrong type for this parameter.')
@@ -287,9 +303,9 @@ export class Param<T> {
     }
   }
 
-  private matchTypes(text: string) {
+  private async matchTypes(text: string, context: MessageContext) {
     for (const type of this.types) {
-      const value = type.match(text);
+      const value = await type.match(text, context);
 
       if (value !== undefined) {
         return value;

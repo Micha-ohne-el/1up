@@ -10,14 +10,13 @@ class _SetRole extends Command {
   level!: number;
 
   @param(Role)
-  @require(async (id: bigint, {isRole}) => await isRole(id))
   role!: bigint;
 
   @optional()
   @param(Guild, 'this')
   guildId!: bigint | 'this' | undefined;
 
-  override async invoke({guildId, canEdit}: MessageContext) {
+  override async invoke({guildId, checks}: MessageContext) {
     const guild = this.guildId === 'this' || this.guildId === undefined ? guildId : this.guildId;
 
     if (guild === undefined) {
@@ -28,7 +27,11 @@ class _SetRole extends Command {
       );
     }
 
-    if (!canEdit(guild)) {
+    if (!await checks.isRole(this.role, guild)) {
+      throw new BadParamError(this.$params.get('role')!, this.role, 'Value cannot be used for this parameter.');
+    }
+
+    if (!checks.canEdit(guild)) {
       return {success: false};
     }
 
@@ -51,7 +54,7 @@ class _ClearRole extends Command {
   @param(Guild, 'this')
   guildId!: bigint | 'this' | undefined;
 
-  override async invoke({guildId, canEdit}: MessageContext) {
+  override async invoke({guildId, checks}: MessageContext) {
     const guild = this.guildId === 'this' || this.guildId === undefined ? guildId : this.guildId;
 
     if (guild === undefined) {
@@ -62,7 +65,7 @@ class _ClearRole extends Command {
       );
     }
 
-    if (!canEdit(guild)) {
+    if (!checks.canEdit(guild)) {
       return {success: false};
     }
 
