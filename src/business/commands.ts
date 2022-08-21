@@ -1,3 +1,4 @@
+import {bigintOrUndefined} from '../util/bigint-or-undefined.ts';
 import {codeBlock, inlineCode} from './wrap.ts';
 import {MessageContext} from '/business/message-context.ts';
 import {getOwnerId} from '/util/secrets.ts';
@@ -140,71 +141,28 @@ export class RegularExpression extends ParamType<RegExp> {
 
 export class Guild extends ParamType<bigint> {
   override match(text: string) {
-    try {
-      return BigInt(text);
-    } catch {
-      return undefined;
-    }
+    return bigintOrUndefined(text);
   }
 }
 
 export class User extends ParamType<bigint> {
   override match(text: string) {
-    try {
-      return BigInt(text);
-    } catch {
-      const match = text.match(/<@(\d+)>/)?.[1];
-
-      if (!match) {
-        return undefined;
-      }
-
-      try {
-        return BigInt(match);
-      } catch {
-        return undefined;
-      }
-    }
+    return bigintOrUndefined(text)
+      ?? bigintOrUndefined(text.match(/<@(\d+)>/)?.[1]);
   }
 }
 
 export class Channel extends ParamType<bigint> {
   override match(text: string) {
-    try {
-      return BigInt(text);
-    } catch {
-      const match = text.match(/<#(\d+)>/)?.[1];
-
-      if (!match) {
-        return undefined;
-      }
-
-      try {
-        return BigInt(match);
-      } catch {
-        return undefined;
-      }
-    }
+    return bigintOrUndefined(text)
+      ?? bigintOrUndefined(text.match(/<#(\d+)>/)?.[1]);
   }
 }
 
 export class Role extends ParamType<bigint> {
   override match(text: string) {
-    try {
-      return BigInt(text);
-    } catch {
-      const match = text.match(/<@&(\d+)>/)?.[1];
-
-      if (!match) {
-        return undefined;
-      }
-
-      try {
-        return BigInt(match);
-      } catch {
-        return undefined;
-      }
-    }
+    return bigintOrUndefined(text)
+      ?? bigintOrUndefined(text.match(/<@&(\d+)>/)?.[1]);
   }
 }
 
