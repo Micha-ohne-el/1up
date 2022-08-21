@@ -57,6 +57,7 @@ export async function getRoles(guildId: bigint) {
     SELECT level, roleId
     FROM role
     WHERE guildId = ${guildId.toString()}
+    ORDER BY level
   `;
 }
 
