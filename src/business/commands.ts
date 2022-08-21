@@ -104,13 +104,21 @@ abstract class ParamType<T = unknown> {
 
 export class Float extends ParamType<number> {
   override match(text: string) {
-    return Number.parseFloat(text);
+    const number = Number.parseFloat(text);
+
+    if (Number.isFinite(number)) {
+      return number;
+    }
   }
 }
 
 export class Int extends ParamType<number> {
   override match(text: string) {
-    return Number.parseInt(text, 10);
+    const number = Number.parseInt(text, 10);
+
+    if (Number.isFinite(number)) {
+      return number;
+    }
   }
 }
 
