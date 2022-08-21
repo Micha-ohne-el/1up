@@ -88,6 +88,14 @@ export async function setRoleForLevel(guildId: bigint, level: number, roleId: bi
   `;
 }
 
+export async function clearRoleForLevel(guildId: bigint, level: number) {
+  return await sql`
+    DELETE FROM role
+    WHERE guildId = ${guildId.toString()}
+      AND level = ${level}
+  `;
+}
+
 export async function getLeaderboard(guildId: bigint, amount: number) {
   return await sql`
     SELECT userId, xp, messages
