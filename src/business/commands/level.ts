@@ -13,6 +13,9 @@ class _Level extends Command {
   guildId!: bigint | 'this' | 'global' | undefined;
 
   override async invoke({authorId, guildId}: MessageContext) {
+    const user = this.userId === 'me' || this.userId === undefined ? authorId : this.userId;
+    const isRequestForAuthor = user === authorId;
+
     const guild = this.guildId === 'this' || this.guildId === undefined ? guildId : this.guildId;
 
     if (guild === undefined) {
@@ -23,34 +26,38 @@ class _Level extends Command {
       );
     }
 
-    if (this.userId === 'me' || this.userId === undefined) {
-      if (guild === 'global') {
-        const xp = await getXpOfUserGlobally(authorId);
+    if (guild === 'global') {
+      return await this.respondGlobalXp(user, isRequestForAuthor);
+    }
 
-        return {
-          message: `Globally, you have collected ${xp} XP.`
-        };
-      }
+    return await this.respondGuildXp(user, guild, isRequestForAuthor);
+  }
 
-      const xp = await getXpOfUserInGuild(guild, authorId);
+  private async respondGlobalXp(user: bigint, isRequestForAuthor: boolean) {
+    const xp = await getXpOfUserGlobally(user);
 
+    if (isRequestForAuthor) {
+      return {
+        message: `Globally, you have collected ${xp} XP.`
+      };
+    }
+
+    return {
+      message: `Globally, this user has collected ${xp} XP.`
+    };
+  }
+
+  private async respondGuildXp(user: bigint, guild: bigint, isRequestForAuthor: boolean) {
+    const xp = await getXpOfUserInGuild(guild, user);
+
+    if (isRequestForAuthor) {
       return {
         message: `You are at level ${getLevelFromXp(xp)}, with ${xp} XP.`
       };
-    } else {
-      if (guild === 'global') {
-        const xp = await getXpOfUserGlobally(this.userId);
-
-        return {
-          message: `Globally, this user has collected ${xp} XP.`
-        };
-      }
-
-      const xp = await getXpOfUserInGuild(guild, this.userId);
-
-      return {
-        message: `This user is at level ${getLevelFromXp(xp)}, with ${xp} XP.`
-      };
     }
+
+    return {
+      message: `This user is at level ${getLevelFromXp(xp)}, with ${xp} XP.`
+    };
   }
 }
