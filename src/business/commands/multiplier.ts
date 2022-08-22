@@ -2,7 +2,7 @@ import {command, param, Command, Channel, Float, Role} from '/business/commands.
 import {MessageContext} from '/business/message-context.ts';
 import {getXpMultiplier, setXpMultiplier} from '/data/multipliers.ts';
 
-@command('multiplier')
+@command('multiplier', 'mult')
 class _SetMultiplier extends Command {
   @param(Channel, Role)
   id!: bigint;
@@ -23,7 +23,7 @@ class _SetMultiplier extends Command {
   }
 }
 
-@command('multiplier')
+@command('multiplier', 'mult')
 class _GetMultiplier extends Command {
   @param(Channel, Role)
   id!: bigint;

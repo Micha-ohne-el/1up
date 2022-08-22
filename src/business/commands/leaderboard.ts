@@ -3,7 +3,7 @@ import {command, Command, param, optional, Guild, Response, BadParamError} from 
 import {getLeaderboardOfGuild} from '/data/xp.ts';
 import {mentionUser} from '/business/mention.ts';
 
-@command('leaderboard')
+@command('leaderboard', 'board', 'ranks')
 class _Leaderboard extends Command {
   @param(Guild, 'this')
   @optional()

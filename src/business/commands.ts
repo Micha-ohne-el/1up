@@ -1,17 +1,17 @@
-import {bigintOrUndefined} from '../util/bigint-or-undefined.ts';
-import {codeBlock, inlineCode} from './wrap.ts';
+import {bigintOrUndefined} from '/util/bigint-or-undefined.ts';
+import {codeBlock, inlineCode} from '/business/wrap.ts';
 import {MessageContext} from '/business/message-context.ts';
 import {getOwnerId} from '/util/secrets.ts';
 
 export const commands = new Set<Command>();
 
 export abstract class Command<T = any> {
-  $name!: string;
+  $names!: string[];
   $params!: Map<string, Param<T>>;
   $privilegeLevel!: PrivilegeLevel;
 
   init() {
-    this.$name = this.$name ?? this.constructor.name;
+    this.$names = this.$names?.length > 0 ? this.$names : [this.constructor.name];
     this.$params = this.$params ?? new Map<string, Param<T>>();
     this.$privilegeLevel = new Everyone();
   }
@@ -37,13 +37,13 @@ export abstract class Command<T = any> {
   }
 
   toString() {
-    const parts = [this.$name, ...this.$params.values()];
+    const parts = [this.$names[0], ...this.$params.values()];
 
     return codeBlock(parts.join(' '));
   }
 
   toErrorMessage(param: Param<unknown>) {
-    const parts = [this.$name, ...this.$params.values()];
+    const parts = [this.$names[0], ...this.$params.values()];
     const underlines = parts.map(part => (part === param ? '~' : ' ').repeat(part.toString().length));
 
     return codeBlock(parts.join(' ') + '\n' + underlines.join(' '));
@@ -198,15 +198,13 @@ class Literal extends ParamType<string> {
   }
 }
 
-export function command(name?: string) {
+export function command(...names: string[]) {
   return (target: new () => Command) => {
     const prototype = target.prototype as Command;
 
     prototype.init();
 
-    if (name !== undefined) {
-      prototype.$name = name;
-    }
+    prototype.$names = names;
 
     commands.add(prototype);
   };
