@@ -27,7 +27,6 @@ const bot = createBot(
       },
       async messageCreate(bot, message) {
         if (message.isBot || message.authorId === bot.id) {
-          debug('Message ignored because its author is a bot.', message);
           return;
         }
 
