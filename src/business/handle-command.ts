@@ -42,10 +42,8 @@ function getPossibleCommands(commands: Set<Command>, text: string): Map<Command,
 
   for (const command of commands) {
     for (const name of command.$names) {
-      const pos = text.toLowerCase().indexOf(name.toLowerCase());
-
-      if (pos >= 0) {
-        possibleCommands.set(command, text.slice(pos));
+      if (text.toLowerCase().startsWith(name.toLowerCase())) {
+        possibleCommands.set(command, text.slice(name.toLowerCase().length).trim());
         break;
       }
     }

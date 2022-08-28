@@ -91,7 +91,7 @@ export abstract class Command<T = any> {
       params.push(token);
     }
 
-    return params.slice(1);
+    return params;
   }
 }
 

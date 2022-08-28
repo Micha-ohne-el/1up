@@ -6,7 +6,8 @@ import {formatUser} from '/ui/discord/format-user.ts';
 import {respond} from '/ui/discord/respond.ts';
 import {handleCommand} from '/business/handle-command.ts';
 import {getLevelRoleId, getLevelRoleIds} from '/data/roles.ts';
-import {info, error, debug} from '/util/log.ts';
+import {info, error} from '/util/log.ts';
+import {mentionUser} from '/business/mention.ts';
 
 export async function connect() {
   await startBot(bot);
@@ -33,7 +34,7 @@ const bot = createBot(
         try {
           const context = await getContextFromMessage(message)
           if (isCommandMessage(message)) {
-            await handleCommandMessage(message.content, context);
+            await handleCommandMessage(removeCommandPrefix(message.content), context);
           } else {
             const update = await handleMessage(context);
 
@@ -50,7 +51,11 @@ const bot = createBot(
 );
 
 function isCommandMessage(message: Message) {
-  return message.guildId === undefined || message.mentionedUserIds.includes(bot.id)
+  return message.guildId === undefined || message.content.trim().startsWith(mentionUser(bot.id));
+}
+
+function removeCommandPrefix(text: string) {
+  return text.replace(mentionUser(bot.id), '').trim();
 }
 
 async function handleCommandMessage(text: string, context: MessageContext) {
