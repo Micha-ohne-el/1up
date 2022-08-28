@@ -1,6 +1,7 @@
 import {MessageContext} from '/business/message-context.ts';
 import {commands, ParamError, BadParamError, Response, Command, PermissionError} from '/business/commands.ts';
 import {warning} from '/util/log.ts';
+import {codeBlock} from '/business/wrap.ts';
 
 import '/business/commands/multiplier.ts';
 import '/business/commands/range.ts';
@@ -10,6 +11,7 @@ import '/business/commands/logs.ts';
 import '/business/commands/status.ts';
 import '/business/commands/leaderboard.ts';
 import '/business/commands/mee6-import.ts';
+import '/business/commands/help.ts';
 
 export async function handleCommand(text: string, context: MessageContext): Promise<Response | void> {
   const possibleCommands = getPossibleCommands(commands, text);
@@ -56,9 +58,9 @@ function constructErrorMessage(error: PermissionError, command: Command): string
 function constructErrorMessage(error: ParamError, command: Command): string | undefined;
 function constructErrorMessage(error: Error, command: Command): string | undefined {
   if (error instanceof BadParamError) {
-    return error.message + '\n' + command.toErrorMessage(error.param);
+    return error.message + '\n' + codeBlock(command.toErrorMessage(error.param));
   } else if (error instanceof ParamError) {
-    return error.message + '\n' + command.toString();
+    return error.message + '\n' + codeBlock(command.toString());
   } else if (error instanceof PermissionError) {
     return error.message;
   }

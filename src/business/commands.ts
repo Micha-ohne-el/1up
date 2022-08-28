@@ -1,5 +1,5 @@
 import {bigintOrUndefined} from '/util/bigint-or-undefined.ts';
-import {codeBlock, inlineCode} from '/business/wrap.ts';
+import {inlineCode} from '/business/wrap.ts';
 import {MessageContext} from '/business/message-context.ts';
 import {getOwnerId} from '/util/secrets.ts';
 
@@ -39,14 +39,14 @@ export abstract class Command<T = any> {
   toString() {
     const parts = [this.$names[0], ...this.$params.values()];
 
-    return codeBlock(parts.join(' '));
+    return parts.join(' ');
   }
 
   toErrorMessage(param: Param<unknown>) {
     const parts = [this.$names[0], ...this.$params.values()];
     const underlines = parts.map(part => (part === param ? '~' : ' ').repeat(part.toString().length));
 
-    return codeBlock(parts.join(' ') + '\n' + underlines.join(' '));
+    return parts.join(' ') + '\n' + underlines.join(' ');
   }
 
   [key: string]: unknown;
