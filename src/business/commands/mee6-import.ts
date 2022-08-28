@@ -2,7 +2,7 @@ import {MessageContext} from '/business/message-context.ts';
 import {command, availableTo, ServerOwner, Command, param, Text, Response} from '/business/commands.ts';
 import {sql} from '/data/db.ts';
 import {error, warning, info} from '/util/log.ts';
-import postgres from 'https://deno.land/x/postgresjs@v3.2.4/types/index.d.ts';
+import type postgres from '/deps/postgres.ts';
 import {getLevelFromXp} from '/data/xp.ts';
 
 @command('mee6import')
