@@ -61,4 +61,12 @@ await sql`
 
 info('Success.');
 
+info('Dropping table "config"...');
+
+await sql`
+  DROP TABLE IF EXISTS config
+`;
+
+info('Success.');
+
 Deno.exit();

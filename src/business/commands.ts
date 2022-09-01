@@ -2,6 +2,7 @@ import {bigintOrUndefined} from '/util/bigint-or-undefined.ts';
 import {inlineCode} from '/business/wrap.ts';
 import {MessageContext} from '/business/message-context.ts';
 import {getOwnerId} from '/util/secrets.ts';
+import {getModeratorRole} from '../data/config.ts';
 
 export const commands = new Set<Command>();
 
@@ -13,7 +14,7 @@ export abstract class Command<T = any> {
   init() {
     this.$names = this.$names?.length > 0 ? this.$names : [this.constructor.name];
     this.$params = this.$params ?? new Map<string, Param<T>>();
-    this.$privilegeLevel = new Everyone();
+    this.$privilegeLevel = this.$privilegeLevel ?? new Everyone();
   }
 
   abstract invoke(context: MessageContext): Promise<Response> | Response;
@@ -29,7 +30,7 @@ export abstract class Command<T = any> {
       throw new ExtraParamError(params.join(' '));
     }
 
-    if (!this.$privilegeLevel.check(context)) {
+    if (!await this.$privilegeLevel.check(context)) {
       throw new PermissionError(this.$privilegeLevel);
     }
 
@@ -313,7 +314,7 @@ export class Param<T> {
 }
 
 export interface PrivilegeLevel {
-  check(context: MessageContext): boolean;
+  check(context: MessageContext): boolean | Promise<boolean>;
 }
 
 export class Everyone implements PrivilegeLevel {
@@ -323,8 +324,18 @@ export class Everyone implements PrivilegeLevel {
 }
 
 export class Moderator implements PrivilegeLevel {
-  check() {
-    return false; // TODO: Implement.
+  async check({guildId, roleIds}: MessageContext) {
+    if (!guildId) {
+      return false;
+    }
+
+    const moderatorRoleId = await getModeratorRole(guildId);
+
+    if (!moderatorRoleId) {
+      return false;
+    }
+
+    return roleIds.includes(moderatorRoleId);
   }
 }
 

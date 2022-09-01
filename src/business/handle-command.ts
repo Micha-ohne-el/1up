@@ -12,6 +12,7 @@ import '/business/commands/status.ts';
 import '/business/commands/leaderboard.ts';
 import '/business/commands/mee6-import.ts';
 import '/business/commands/help.ts';
+import '/business/commands/moderator.ts';
 
 export async function handleCommand(text: string, context: MessageContext): Promise<Response | void> {
   const possibleCommands = getPossibleCommands(commands, text);

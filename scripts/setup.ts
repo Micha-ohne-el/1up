@@ -68,4 +68,16 @@ await sql`
 
 info('Success.');
 
+info('Creating table "config"...');
+
+await sql`
+  CREATE TABLE config (
+    guildId bigint,
+    moderatorRole bigint,
+    PRIMARY KEY(guildId)
+  )
+`;
+
+info('Success.');
+
 Deno.exit();
