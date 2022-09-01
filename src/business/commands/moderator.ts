@@ -1,4 +1,4 @@
-import {getModeratorRole, setModeratorRole} from '../../data/config.ts';
+import {clearModeratorRole, getModeratorRole, setModeratorRole} from '/data/config.ts';
 import {mentionRole} from '/business/mention.ts';
 import {command, availableTo, ServerOwner, Moderator, Command, param, Role, Response} from '/business/commands.ts';
 import {MessageContext} from '/business/message-context.ts';
@@ -6,8 +6,8 @@ import {MessageContext} from '/business/message-context.ts';
 @command('moderator', 'mod')
 @availableTo(ServerOwner)
 class _SetModeratorRole extends Command {
-  @param(Role)
-  roleId!: bigint;
+  @param(Role, 'clear')
+  roleId!: bigint | 'clear';
 
   override async invoke({guildId}: MessageContext): Promise<Response> {
     if (!guildId) {
@@ -17,7 +17,11 @@ class _SetModeratorRole extends Command {
       };
     }
 
-    await setModeratorRole(guildId, this.roleId);
+    if (this.roleId === 'clear') {
+      await clearModeratorRole(guildId);
+    } else {
+      await setModeratorRole(guildId, this.roleId);
+    }
 
     return {success: true};
   }

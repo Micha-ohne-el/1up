@@ -25,3 +25,10 @@ export async function getModeratorRole(guildId: bigint) {
 
   return bigintOrUndefined(rows[0]['moderatorrole']);
 }
+
+export async function clearModeratorRole(guildId: bigint) {
+  await sql`
+    DELETE FROM config
+    WHERE guildId = ${guildId.toString()}
+  `;
+}
