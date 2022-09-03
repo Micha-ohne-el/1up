@@ -317,14 +317,32 @@ export interface PrivilegeLevel {
   check(context: MessageContext): boolean | Promise<boolean>;
 }
 
-export class Everyone implements PrivilegeLevel {
-  check() {
-    return true;
+export class BotOwner implements PrivilegeLevel {
+  check(context: MessageContext) {
+    return context.authorId === getOwnerId();
   }
 }
 
-export class Moderator implements PrivilegeLevel {
-  async check({guildId, roleIds}: MessageContext) {
+export class GuildOwner implements PrivilegeLevel {
+  async check(context: MessageContext) {
+    const {authorId, checks} = context;
+
+    if (await new BotOwner().check(context)) {
+      return true;
+    }
+
+    return await checks.isGuildOwner(authorId);
+  }
+}
+
+export class Moderator extends GuildOwner implements PrivilegeLevel {
+  async check(context: MessageContext) {
+    const {guildId, roleIds} = context;
+
+    if (await new GuildOwner().check(context)) {
+      return true;
+    }
+
     if (!guildId) {
       return false;
     }
@@ -339,15 +357,9 @@ export class Moderator implements PrivilegeLevel {
   }
 }
 
-export class GuildOwner implements PrivilegeLevel {
-  check({authorId, checks}: MessageContext) {
-    return checks.isGuildOwner(authorId);
-  }
-}
-
-export class BotOwner implements PrivilegeLevel {
-  check(context: MessageContext) {
-    return context.authorId === getOwnerId();
+export class Everyone implements PrivilegeLevel {
+  check() {
+    return true;
   }
 }
 
