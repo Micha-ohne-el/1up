@@ -23,6 +23,10 @@ export async function getModeratorRole(guildId: bigint) {
     WHERE guildId = ${guildId.toString()}
   `;
 
+  if (rows.length === 0) {
+    return undefined;
+  }
+
   return bigintOrUndefined(rows[0]['moderatorrole']);
 }
 

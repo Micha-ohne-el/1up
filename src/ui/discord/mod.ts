@@ -142,6 +142,13 @@ async function getContextFromMessage(message: Message): Promise<MessageContext> 
       async isGuild(id) {
         return getGuild(bot, id) !== undefined;
       },
+      async isGuildOwner(authorId) {
+        if (!message.guildId) {
+          return false;
+        }
+
+        return (await getGuild(bot, message.guildId))?.ownerId === authorId;
+      }
     }
   };
 }

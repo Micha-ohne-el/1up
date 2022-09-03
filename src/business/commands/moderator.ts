@@ -1,10 +1,10 @@
 import {clearModeratorRole, getModeratorRole, setModeratorRole} from '/data/config.ts';
 import {mentionRole} from '/business/mention.ts';
-import {command, availableTo, ServerOwner, Moderator, Command, param, Role, Response} from '/business/commands.ts';
+import {command, availableTo, GuildOwner, Moderator, Command, param, Role, Response} from '/business/commands.ts';
 import {MessageContext} from '/business/message-context.ts';
 
 @command('moderator', 'mod')
-@availableTo(ServerOwner)
+@availableTo(GuildOwner)
 class _SetModeratorRole extends Command {
   @param(Role, 'clear')
   roleId!: bigint | 'clear';

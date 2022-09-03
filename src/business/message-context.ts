@@ -10,5 +10,6 @@ export interface MessageContext {
     isRole(id: bigint, guildId?: bigint): Promise<boolean>;
     isChannel(id: bigint): Promise<boolean>;
     isGuild(id: bigint): Promise<boolean>;
+    isGuildOwner(userId: bigint): Promise<boolean>;
   }
 }

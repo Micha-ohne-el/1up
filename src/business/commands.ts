@@ -339,9 +339,9 @@ export class Moderator implements PrivilegeLevel {
   }
 }
 
-export class ServerOwner implements PrivilegeLevel {
-  check() {
-    return false; // TODO: Implement.
+export class GuildOwner implements PrivilegeLevel {
+  check({authorId, checks}: MessageContext) {
+    return checks.isGuildOwner(authorId);
   }
 }
 

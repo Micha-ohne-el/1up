@@ -1,12 +1,12 @@
 import {MessageContext} from '/business/message-context.ts';
-import {command, availableTo, ServerOwner, Command, param, Text, Response} from '/business/commands.ts';
+import {command, availableTo, GuildOwner, Command, param, Text, Response} from '/business/commands.ts';
 import {sql} from '/data/db.ts';
 import {error, warning, info} from '/util/log.ts';
 import type postgres from '/deps/postgres.ts';
 import {getLevelFromXp} from '/data/xp.ts';
 
 @command('mee6import')
-@availableTo(ServerOwner)
+@availableTo(GuildOwner)
 class _Mee6Import extends Command {
   @param(Text)
   things!: string;
