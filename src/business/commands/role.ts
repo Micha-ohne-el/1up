@@ -1,9 +1,10 @@
-import {command, Command, param, optional, require, Int, Role, Guild, BadParamError} from '/business/commands.ts';
+import {command, availableTo, Command, param, require, Int, Role, BadParamError, GuildOwner} from '/business/commands.ts';
 import {MessageContext} from '/business/message-context.ts';
 import {setLevelRoleId, getLevelRoleId, getLevelRoleIds, clearLevelRoleId} from '/data/roles.ts';
 import {mentionRole} from '/business/mention.ts';
 
 @command('role')
+@availableTo(GuildOwner)
 class _SetRole extends Command {
   @param(Int)
   @require((level: number) => level > 0)
@@ -12,30 +13,16 @@ class _SetRole extends Command {
   @param(Role)
   role!: bigint;
 
-  @optional()
-  @param(Guild, 'this')
-  guildId!: bigint | 'this' | undefined;
-
   override async invoke({guildId, checks}: MessageContext) {
-    const guild = this.guildId === 'this' || this.guildId === undefined ? guildId : this.guildId;
-
-    if (guild === undefined) {
-      throw new BadParamError(
-        this.$params.get('guildId')!,
-        this.guildId,
-        'Please provide a Guild ID instead of using `this`, when using this command in DMs.'
-      );
+    if (guildId === undefined) {
+      throw new Error('This command must be used in a guild.');
     }
 
-    if (!await checks.isRole(this.role, guild)) {
+    if (!await checks.isRole(this.role, guildId)) {
       throw new BadParamError(this.$params.get('role')!, this.role, 'Value cannot be used for this parameter.');
     }
 
-    if (!checks.canEdit(guild)) {
-      return {success: false};
-    }
-
-    await setLevelRoleId(guild, this.level, this.role);
+    await setLevelRoleId(guildId, this.level, this.role);
 
     return {success: true};
   }
@@ -50,26 +37,12 @@ class _ClearRole extends Command {
   @param('clear')
   role!: 'clear';
 
-  @optional()
-  @param(Guild, 'this')
-  guildId!: bigint | 'this' | undefined;
-
-  override async invoke({guildId, checks}: MessageContext) {
-    const guild = this.guildId === 'this' || this.guildId === undefined ? guildId : this.guildId;
-
-    if (guild === undefined) {
-      throw new BadParamError(
-        this.$params.get('guildId')!,
-        this.guildId,
-        'Please provide a Guild ID instead of using `this`, when using this command in DMs.'
-      );
+  override async invoke({guildId}: MessageContext) {
+    if (guildId === undefined) {
+      throw new Error('This command must be used in a guild.');
     }
 
-    if (!checks.canEdit(guild)) {
-      return {success: false};
-    }
-
-    await clearLevelRoleId(guild, this.level);
+    await clearLevelRoleId(guildId, this.level);
 
     return {success: true};
   }
@@ -81,22 +54,12 @@ class _GetRole extends Command {
   @require((level: number) => level > 0)
   level!: number;
 
-  @optional()
-  @param(Guild, 'this')
-  guildId!: bigint | 'this' | undefined;
-
   override async invoke({guildId}: MessageContext) {
-    const guild = this.guildId === 'this' || this.guildId === undefined ? guildId : this.guildId;
-
-    if (guild === undefined) {
-      throw new BadParamError(
-        this.$params.get('guildId')!,
-        this.guildId,
-        'Please provide a Guild ID instead of using `this`, when using this command in DMs.'
-      );
+    if (guildId === undefined) {
+      throw new Error('This command must be used in a guild.');
     }
 
-    const role = await getLevelRoleId(guild, this.level);
+    const role = await getLevelRoleId(guildId, this.level);
 
     if (role) {
       return {message: `Users at level ${this.level} are assigned ${mentionRole(role)}`};
@@ -108,22 +71,12 @@ class _GetRole extends Command {
 
 @command('roles')
 class _GetRoles extends Command {
-  @optional()
-  @param(Guild, 'this')
-  guildId!: bigint | 'this' | undefined;
-
   override async invoke({guildId}: MessageContext) {
-    const guild = this.guildId === 'this' || this.guildId === undefined ? guildId : this.guildId;
-
-    if (guild === undefined) {
-      throw new BadParamError(
-        this.$params.get('guildId')!,
-        this.guildId,
-        'Please provide a Guild ID instead of using `this`, when using this command in DMs.'
-      );
+    if (guildId === undefined) {
+      throw new Error('This command must be used in a guild.');
     }
 
-    const roles = await getLevelRoleIds(guild);
+    const roles = await getLevelRoleIds(guildId);
 
     if (roles.length) {
       return {

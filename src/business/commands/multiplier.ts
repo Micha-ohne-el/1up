@@ -1,8 +1,8 @@
-import {command, param, Command, Channel, Float, Role} from '/business/commands.ts';
-import {MessageContext} from '/business/message-context.ts';
+import {command, availableTo, param, Command, Channel, Float, Role, GuildOwner, Moderator} from '/business/commands.ts';
 import {getXpMultiplier, setXpMultiplier} from '/data/multipliers.ts';
 
 @command('multiplier', 'mult')
+@availableTo(GuildOwner)
 class _SetMultiplier extends Command {
   @param(Channel, Role)
   id!: bigint;
@@ -10,11 +10,11 @@ class _SetMultiplier extends Command {
   @param(Float)
   multiplier!: number;
 
-  override async invoke({checks}: MessageContext) {
-    if (!checks.canEdit(this.id)) {
-      return {success: false};
-    }
-
+  // TODO: IMPORTANT!
+  // Currently, this enables any guild owner (anyone) to change any multiplier globally.
+  // The proper solution to this is having command params resolve to the correct Discord entities intead of just their IDs,
+  // and then checking which guild the channel/role belongs to.
+  override async invoke() {
     await setXpMultiplier(this.id, this.multiplier);
 
     return {
@@ -24,6 +24,7 @@ class _SetMultiplier extends Command {
 }
 
 @command('multiplier', 'mult')
+@availableTo(Moderator)
 class _GetMultiplier extends Command {
   @param(Channel, Role)
   id!: bigint;

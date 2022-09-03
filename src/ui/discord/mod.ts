@@ -1,5 +1,5 @@
 import {createBot, startBot, Intents, Message, getUser, getChannel, removeRole, addRole, getRoles, getGuild} from '/deps/discordeno.ts';
-import {getBotToken, getOwnerId} from '/util/secrets.ts';
+import {getBotToken} from '/util/secrets.ts';
 import {MessageContext} from '/business/message-context.ts';
 import {handleMessage, Update, shouldUpdate} from '/business/handle-message.ts';
 import {formatUser} from '/ui/discord/format-user.ts';
@@ -121,9 +121,6 @@ async function getContextFromMessage(message: Message): Promise<MessageContext> 
     channelIds: await getChannelHierarchy(message.channelId),
     roleIds: message.member?.roles ?? [],
     checks: {
-      async canEdit(_id: bigint) {
-        return message.authorId === getOwnerId();
-      },
       async isUser(id) {
         return getUser(bot, id) !== undefined;
       },

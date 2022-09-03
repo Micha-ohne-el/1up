@@ -5,7 +5,6 @@ export interface MessageContext {
   channelIds: bigint[];
   roleIds: bigint[];
   checks: {
-    canEdit(id: bigint): Promise<boolean>;
     isUser(id: bigint): Promise<boolean>;
     isRole(id: bigint, guildId?: bigint): Promise<boolean>;
     isChannel(id: bigint): Promise<boolean>;

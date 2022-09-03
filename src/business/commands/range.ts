@@ -1,57 +1,36 @@
 import {MessageContext} from '/business/message-context.ts';
-import {command, param, optional, Command, Guild, Int, BadParamError} from '/business/commands.ts';
+import {command, availableTo, param, Command, Int, GuildOwner, Moderator} from '/business/commands.ts';
 import {getGuildXpRange, setXpRange} from '/data/multipliers.ts';
 
 @command('range')
+@availableTo(GuildOwner)
 class _SetRange extends Command {
-  @param(Guild, 'this')
-  guildId!: bigint | 'this';
-
   @param(Int)
   first!: number;
 
   @param(Int)
   last!: number;
 
-  override async invoke({checks, guildId}: MessageContext) {
-    const guild = this.guildId === 'this' ? guildId : this.guildId;
-
-    if (guild === undefined) {
-      throw new BadParamError(
-        this.$params.get('guildId')!,
-        this.guildId,
-        'Please provide a Guild ID instead of using `this`, when using this command in DMs.'
-      );
+  override async invoke({guildId}: MessageContext) {
+    if (guildId === undefined) {
+      throw new Error('This command must be used in a guild.');
     }
 
-    if (!checks.canEdit(guild)) {
-      return {success: false};
-    }
-
-    await setXpRange(guild, this.first, this.last);
+    await setXpRange(guildId, this.first, this.last);
 
     return {success: true};
   }
 }
 
 @command('range')
+@availableTo(Moderator)
 class _GetRange extends Command {
-  @optional()
-  @param(Guild, 'this')
-  guildId!: bigint | 'this' | undefined;
-
   override async invoke({guildId}: MessageContext) {
-    const guild = this.guildId === 'this' || this.guildId === undefined ? guildId : this.guildId;
-
-    if (guild === undefined) {
-      throw new BadParamError(
-        this.$params.get('guildId')!,
-        this.guildId,
-        'Please provide a Guild ID, when using this command in DMs.'
-      );
+    if (guildId === undefined) {
+      throw new Error('This command must be used in a guild.');
     }
 
-    const [first, last] = await getGuildXpRange(guild);
+    const [first, last] = await getGuildXpRange(guildId);
 
     return {
       message: `XP will be randomly chosen between ${first} and ${last}.`
